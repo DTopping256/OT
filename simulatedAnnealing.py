@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# In[3]:
+
+
 import math
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,6 +17,10 @@ def problem_function(x):
         return float(-e**(-(x/100)**2))
     else:
         return float(-e**(-1) + (x - 100)*(x - 102))
+
+
+# In[72]:
+
 
 import os
 import sys
@@ -46,7 +53,7 @@ def simulated_annealing(f, s_0, t_0, neighbourhood_func, temp_reduc_func, acc_pr
         print("--------------------------------------------------------------------------------------------\ns_%d: %f" %
               (iteration_counter, solution))
         prev_solution = solution
-        step_array.append(solution)
+        step_array.append((solution, temperature))
         for epoch in range(1, max_epoch+1):
             neighbourhood = neighbourhood_func(solution)
             possible_solution = neighbourhood[random.randrange(
@@ -66,15 +73,84 @@ def simulated_annealing(f, s_0, t_0, neighbourhood_func, temp_reduc_func, acc_pr
         iteration_counter += 1
     return (step_array, solution)
 
+
+# In[152]:
+
+
+# Graph the results (data is a tuple of x's and tempaturature per epoch)
+
+def plot_problem(f, xrange, data): 
+    xs = np.linspace(xrange[0], xrange[1], 2*(xrange[1]-xrange[0]))
+    ys = np.array([f(i) for i in xs ])
+    
+    data_length = len(data)
+    s_0 = data[0][0]
+    s_n = data[-1][0]
+    
+    temperatures = np.array([round(i[1], 2) for i in data])
+    xdata = np.array([i[0] for i in data])
+    xplots = np.array([round(i, 2) for i in xdata])
+    yplots = np.array([round(f(i), 2) for i in xdata])
+    
+    # Work out bounds of graph
+    height = (f(xrange[0]), f(xrange[1]))
+    width = xrange
+    midpoint = ((width[0]+width[1])/2, (height[0]+height[1])/2)
+
+    # MatPlotLib
+    
+    # Plot the problem line
+    plt.title("Problem line (only)")
+    plt.plot(xs, ys, '-g', label="f(x)")
+    plt.legend(framealpha=0.4)
+    plt.show()
+    
+    # Plot the results against problem line
+    plt.title("Results against problem line")
+    line = plt.plot(xs, ys, '-g', label="f(x)")
+    
+    # Plot array_plottings
+    tenth_data_length = int(data_length/10)
+    for i in range(10):
+        colour = ((10-i)/10, 0, i/10)
+        label=" "
+        if (i == 0):
+            label="Epoch (hot temp)"
+        if (i == 9):
+            label="Epoch (cold temp)"
+        plt.plot(xplots[i*tenth_data_length:(i+1)*tenth_data_length], yplots[i*tenth_data_length:(i+1)*tenth_data_length], "o", color=colour, label=label)
+    
+    # Annotate plots
+    plt.annotate(text="Start point", xy=(xplots[0], yplots[0]), xytext=(midpoint[0], midpoint[1]+70), arrowprops=dict(arrowstyle='->'))
+    plt.annotate(text="Finish point", xy=(xplots[-1], yplots[-1]), xytext=(midpoint[0], midpoint[1]+30), arrowprops=dict(arrowstyle='->'))
+    
+    plt.legend(framealpha=0.4)
+    plt.show()
+    print("Plot data (2DP)\n_____________________________________\nEpoch\tTemperature\tSolution")
+    for i in range(data_length):
+        print("{}\t{}\t\t({}, {})".format(i, temperatures[i], xplots[i], yplots[i]))
+
+
+# In[19]:
+
+
+s_0 = 120
+t_0 = float(1000)
+max_i = 50
+max_epoch = 50
+
 def neighbourhood_func(x):
     neighbourhood = [x-0.1, x+0.1]
     return neighbourhood
 
+
 def temp_reduc_func(x):
     return float(0.75*x)
 
+
 def acc_prob_func(diff, temperature):
     return float(e**(-diff/temperature))
+
 
 def stop_cond(iteration_counter, max_i, solution, prev_solution):
     if (iteration_counter > 0):
@@ -82,22 +158,36 @@ def stop_cond(iteration_counter, max_i, solution, prev_solution):
             return True
     return False
 
+
+# In[73]:
+
+
 # Run simutated annealing
-simulated_annealing_results = simulated_annealing(problem_function, 120,
-                    float(1000), neighbourhood_func, temp_reduc_func, acc_prob_func, stop_cond, 50, 20)
+simulated_annealing_results = simulated_annealing(problem_function, s_0,
+                    t_0, neighbourhood_func, temp_reduc_func, acc_prob_func, stop_cond, max_i, max_epoch)
 
-# Graph the results
 
-def plot_problem(array_plottings): 
-    xs = np.linspace(-10, 140, 300)
-    ys = np.array([problem_function(i) for i in xs ])
+# In[153]:
 
-    # MatPlotLib
-    plt.plot(xs, ys, '-g.', markevery=[(int(i)+10)*2 for i in array_plottings])
-    plt.show()
 
 # Graph results
-plot_problem(simulated_annealing_results[0])
+plot_problem(problem_function, (-5, 125), simulated_annealing_results[0])
+
+
+# In[154]:
+
+
+# Graph results
+plot_problem(problem_function, (90, 120), simulated_annealing_results[0])
+
+
+# In[ ]:
+
+
+
+
+
+# In[ ]:
 
 
 
