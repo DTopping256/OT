@@ -34,7 +34,7 @@ For this independant variable I tested a range of starting points from -5 to 120
 
 ![SA](./simulatedAnnealing/variable_starting_point_scatter_sds.png?raw=true "standard deviation scatter")
 
-Values of 101 < x < 200 are a good start point for the model; however with a starting point of x < 101 the model does tend to fall into the local minimum at x = -1.
+Values of 90 < x < 200 are a good start point for the model (with these other starting settings); however with a starting point of x < 90 the model does tend to fall towards the local minimum at x = -1.
 
 #### Adjusting temperature variables (t_0 & the cooling function)
 
