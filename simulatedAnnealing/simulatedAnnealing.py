@@ -275,7 +275,7 @@ for i in range(60):
 # In[82]:
 
 
-plot_batch_accuracy("final solution (s_n)", "starting point (s_0)", 101, accuracy_wth_respect_to_starting_position)
+plot_2d_batch_accuracy("final solution (s_n)", "starting point (s_0)", 101, accuracy_wth_respect_to_starting_position)
 
 
 # In[86]:
