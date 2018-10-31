@@ -171,4 +171,4 @@ The above uses the same data but the z-axis is standard deviation from 120, to g
 
 ## References
 
-[Henderson. D, et al.] - http://www.iue.tuwien.ac.at/phd/binder/node87.html (Accessed 30/10/2018)
+[Henderson. D, et al.] - https://pdfs.semanticscholar.org/2726/93df38b60670a8ea788122a7de353a9a7ff0.pdf (Accessed 30/10/2018)
