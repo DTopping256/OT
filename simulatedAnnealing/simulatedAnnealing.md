@@ -1,12 +1,12 @@
 # Simulated Annealing
 
-_[See notebook on Github for step by step workings](https://github.com/DTopping256/OT/blob/master/simulatedAnnealing/simulatedAnnealing.ipynb) or open problem1/simulatedAnnealing.ipynb in Jupyter notebook_
+_[See notebook on Github for step by step workings](./simulatedAnnealing.ipynb) or open problem1/simulatedAnnealing.ipynb in Jupyter notebook_
 
-I have made a generalised [simulated annealing function](https://github.com/DTopping256/OT/blob/5a4750600f1e9b8edff1c40086ccc2bf76501be7/simulatedAnnealing/simulatedAnnealing.py#L42) which I have plugged in many combinations of parameters.
+I have made a generalised [simulated annealing function](./simulatedAnnealing.py#L42) which I have plugged in many combinations of parameters.
 
 You can run the python script or import the ipynb into jupyter notebook to get fresh graphs, SA being stochastic will create different graphs each time but they will be very similar with the current settings.
 
-With the [default](https://github.com/DTopping256/OT/blob/1d24894d233bdabf625ba0f21abf1dd429dead32/simulatedAnnealing/simulatedAnnealing.py#L142) starting parameters, you get something like this:
+With the [default](./simulatedAnnealing.py#L142) starting parameters, you get something like this:
 
 ![SA](./simulated_annealing_on_f_with_start_vars_wide.png?raw=true "SA (wide)")
 
@@ -18,7 +18,7 @@ You can see that the simulated annealing can and does often start to overshoot b
 
 ## Doing the first iterations by hand
 
-I starting with the [default](https://github.com/DTopping256/OT/blob/1d24894d233bdabf625ba0f21abf1dd429dead32/simulatedAnnealing/simulatedAnnealing.py#L142) variables:
+I starting with the [default](./simulatedAnnealing.py#L142) variables:
 
 - `f`: the problem function (defined above)
 - `s_0`: 120
@@ -30,7 +30,7 @@ I starting with the [default](https://github.com/DTopping256/OT/blob/1d24894d233
 - `max_i`: 50
 - `max_epoch`: 50
 
-_Further descriptions of what the variables mean and how they are used in the algorithm can be found in the [source code](https://github.com/DTopping256/OT/blob/5a4750600f1e9b8edff1c40086ccc2bf76501be7/simulatedAnnealing/simulatedAnnealing.py#L29)._
+_Further descriptions of what the variables mean and how they are used in the algorithm can be found in the [source code](./simulatedAnnealing.py#L29)._
 
 ### Algorithm workings
 
