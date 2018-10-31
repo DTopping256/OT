@@ -2,9 +2,17 @@
 
 _[See notebook on Github for step by step workings](./simulatedAnnealing.ipynb) or open problem1/simulatedAnnealing.ipynb in Jupyter notebook_
 
+You can run the python script or import the ipynb into jupyter notebook to get fresh graphs, SA being stochastic will create different graphs each time but they will be very similar with the current settings.
+
+## Abstract
+
 I have made a generalised [simulated annealing function](./simulatedAnnealing.py#L42) which I have plugged in many combinations of parameters.
 
-You can run the python script or import the ipynb into jupyter notebook to get fresh graphs, SA being stochastic will create different graphs each time but they will be very similar with the current settings.
+Throughout testing I found that the 2 minima picked up by simulated annealing are -1 and 101, and I have shown that 101 is the best solution out of the two; so for the rest of this I will refer to 101 as the global minimum and -1 as the local minimum. (see the conclusion)
+
+<hr />
+
+## Parameters which find the best solution
 
 With the [default](./simulatedAnnealing.py#L142) starting parameters, you get something like this:
 
@@ -16,9 +24,9 @@ You can see that the simulated annealing can and does often start to overshoot b
 
 <hr />
 
-## Doing the first iterations by hand
+## The algorithm by hand (first few iterations)
 
-I starting with the [default](./simulatedAnnealing.py#L142) variables:
+Starting with the [default](./simulatedAnnealing.py#L142) parameters:
 
 - `f`: the problem function (defined above)
 - `s_0`: 120
@@ -30,7 +38,7 @@ I starting with the [default](./simulatedAnnealing.py#L142) variables:
 - `max_i`: 50
 - `max_epoch`: 50
 
-_Further descriptions of what the variables mean and how they are used in the algorithm can be found in the [source code](./simulatedAnnealing.py#L29)._
+_Further descriptions of what the parameters mean and how they are used in the algorithm can be found in the [source code](./simulatedAnnealing.py#L29)._
 
 ### Algorithm workings
 
@@ -164,6 +172,27 @@ The above uses the same data but the z-axis is standard deviation from 101, to g
 ![SA](./s0_120_temperature_scatter_sds.png?raw=true "sd scatter s_0 = 120")
 
 The above uses the same data but the z-axis is standard deviation from 120, to get some measure for accuracy of the test to the global minimum.
+
+<hr />
+
+## Neighbourhood function
+
+So far, a neightbourhood of `[x-0.1, x+0.1]` has been used.
+
+<hr />
+
+## Conclusion
+
+The two minima found by the algorithm (when the parameters are abjusted) were x = -1 and x = 101.
+
+We can simply do f(-1) and f(101) to determine the best.
+
+- f(-1) = -0.999900005
+- f(101) = -1.367879441
+
+So x = 101 is the best solution out of the minima found from these tests.
+
+The success of this algorithm in terms of success (at reaching a good solution) is quite consistent when the right parameters are chosen, however as what these are change depending upon the problem function, the accuracy of the method is not constant. I'd say the efficiency of this algorithm can be quite efficient again when favourable parameters are chosen, but it can take a large amount of iterations and epochs to get to a good solution (or it might not get to a good solution in time) when bad parameters are chosen.
 
 <hr />
 
