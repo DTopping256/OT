@@ -165,8 +165,6 @@ The above uses the same data but the z-axis is standard deviation from 101, to g
 
 The above uses the same data but the z-axis is standard deviation from 120, to get some measure for accuracy of the test to the global minimum.
 
-- This showed that even very extreme temperature settings couldn't compensate for the starting position at 80.
-
 <hr />
 
 ## References
