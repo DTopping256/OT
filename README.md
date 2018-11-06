@@ -14,6 +14,6 @@ It plots this graph:
 
 ![f(x)](./problem1/simulatedAnnealing/f.png?raw=true "f(x)")
 
-Where there is a local minimum (a very shallow one on this scale) at -1 and a global minimum at 101.
+Where there is a local minimum (a very shallow one on this scale) at `x = 0` and a global minimum at `x = 101`.
 
 ### [Simulated Annealing](./problem1/simulatedAnnealing/simulatedAnnealing.md)
