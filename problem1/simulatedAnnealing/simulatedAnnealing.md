@@ -16,9 +16,9 @@ Throughout testing I found that the 2 minima picked up by simulated annealing ar
 
 With the [default](./simulatedAnnealing.py#L142) starting parameters, you get something like this:
 
-![SA](./simulated_annealing_on_f_with_start_vars_wide.png?raw=true "SA (wide)")
+![SA (wide)](./simulated_annealing_on_f_with_start_vars_wide.png?raw=true "SA (wide)")
 
-![SA](./simulated_annealing_on_f_with_start_vars_close.png?raw=true "SA (close)")
+![SA (close)](./simulated_annealing_on_f_with_start_vars_close.png?raw=true "SA (close)")
 
 You can see that the simulated annealing can and does often start to overshoot but with the right parameters it finds the global minimum. However, this isn't the case for a lot of combinations of parameters as we will see.
 
@@ -121,7 +121,7 @@ Values of 90 < x < 200 are a good start point for the model (with these other st
 
 ## Adjusting temperature variables (t_0 & the cooling function)
 
-For this, since the gradient of the problem function at the starting point itself affects the general direction of where the simulated annealing will end up (as shown above), I did 3 batch tests with s_0 at 80, 101 and 120.
+For this, since the gradient of the problem function at the starting point itself affects the general direction of where the simulated annealing will end up (as shown above), I did 3 batch tests with s_0: at 80, 101 and 120.
 
 For this my independant variables were:
 
@@ -177,7 +177,16 @@ The above uses the same data but the z-axis is standard deviation from 120, to g
 
 ## Neighbourhood function
 
-So far, a neightbourhood of `[x-0.1, x+0.1]` has been used.
+So far, a neighbourhood of `[x - 0.1, x + 0.1]` has been used.
+
+For this test I've adapted the neighbourhood function so that the parameters include a variable step size and variable amount of pairs of steps around x.
+
+Such that:
+
+- step size 0.1, with 2 pairs around x of 1 would yield: `[x - (2 x 0.1), x - (1 x 0.1), x + (1 x 0.1), x + (2 x 0.1)] = [0.8, 0.9, 1.1, 1.2]`
+- step size 1, with 3 pairs around x of 5 would yield: `[x - (3 x 1), x - (2 x 1), x - (1 x 1), x + (1 x 1), x + (2 x 1), x + (3 x 1)] = [2, 3, 4, 6, 7, 8]`
+
+Again, I did 3 batch tests with s_0 at: 80, 101 and 120.
 
 <hr />
 

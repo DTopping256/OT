@@ -74,7 +74,7 @@ def simulated_annealing(f, s_0, t_0, neighbourhood_func, temp_reduc_func, acc_pr
     return (step_array, solution)
 
 
-# In[70]:
+# In[3]:
 
 
 # Graph the results (data is a tuple of x's and tempaturature per epoch)
@@ -136,7 +136,7 @@ def plot_problem(f, xrange, data, print_data=False):
             print("{}\t{}\t\t({}, {})".format(i, temperatures[i], xplots[i], yplots[i]))
 
 
-# In[4]:
+# In[3]:
 
 
 s_0 = 120
@@ -164,12 +164,12 @@ def stop_cond(iteration_counter, max_i, solution, prev_solution):
     return False
 
 
-# In[5]:
+# In[6]:
 
 
 # Run simulated annealing (test)
 simulated_annealing_results = simulated_annealing(problem_function, s_0,
-                    t_0, neighbourhood_func, temp_reduc_func, acc_prob_func, stop_cond, max_i, max_epoch)
+                    t_0, neighbourhood_func, temp_reduc_func, acc_prob_func, stop_cond, max_i, max_epoch, True)
 
 
 # In[71]:
@@ -186,7 +186,7 @@ plot_problem(problem_function, (-5, 125), simulated_annealing_results[0])
 plot_problem(problem_function, (90, 120), simulated_annealing_results[0])
 
 
-# In[97]:
+# In[4]:
 
 
 # Graph the accuraty of a model when multiple batches are run with different starting values
@@ -317,10 +317,59 @@ print("When s_0 is 120")
 plot_3d_batch_accuracy("start temperature (t_0)", "temperature gradient", "result (s_n)", 101, accuracy_wth_respect_to_temp_at_120)
 
 
-# In[83]:
+# In[5]:
 
 
+# Create a neighbourhood of pairs amount of points either side of x, which have a difference of step.
+# Returns [x-0.1, x+0.1] by default
+def flexible_neighbourhood_func(x, step=0.1, pairs=1):
+    neighbourhood = []
+    for i in range(0, pairs):
+        xdiff = step*(i+1)
+        neighbourhood.append(x-xdiff)
+        neighbourhood.append(x+xdiff)
+    return neighbourhood
 
+
+# In[6]:
+
+
+flexible_neighbourhood_func(1, 0.2, 2)
+
+
+# In[10]:
+
+
+def accuracy_with_neighbourhood(s_0):
+    results = []
+    for i in range(1, 11):
+        pairs = i
+        for j in range(40):
+            step = (j+1)/20
+            s_a_result = simulated_annealing(problem_function, s_0,
+                        t_0, lambda x: flexible_neighbourhood_func(x, step, pairs), temp_reduc_func, acc_prob_func, stop_cond, max_i, max_epoch)[1]
+            results.append({"x": step, "y": pairs, "z": s_a_result})
+    return results
+
+#starting at s_0 = 80 (-21 from target)
+accuracy_wth_respect_to_nh_at_80 = accuracy_with_neighbourhood(80)
+#starting at s_0 = 101 (on target)
+accuracy_wth_respect_to_nh_at_101 = accuracy_with_neighbourhood(101)
+#starting at s_0 = 120 (+21 from target)
+accuracy_wth_respect_to_nh_at_120 = accuracy_with_neighbourhood(120)
+
+
+# In[11]:
+
+
+print("When s_0 is 80")
+plot_3d_batch_accuracy("step", "pairs of neighbourhood values", "result (s_n)", 101, accuracy_wth_respect_to_nh_at_80)
+
+print("When s_0 is 101")
+plot_3d_batch_accuracy("step", "pairs of neighbourhood values", "result (s_n)", 101, accuracy_wth_respect_to_nh_at_101)
+
+print("When s_0 is 120")
+plot_3d_batch_accuracy("step", "pairs of neighbourhood values", "result (s_n)", 101, accuracy_wth_respect_to_nh_at_120)
 
 
 # In[ ]:
