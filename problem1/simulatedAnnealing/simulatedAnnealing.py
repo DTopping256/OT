@@ -19,7 +19,7 @@ def problem_function(x):
         return float(-e**(-1) + (x - 100)*(x - 102))
 
 
-# In[2]:
+# In[34]:
 
 
 import os
@@ -71,15 +71,54 @@ def simulated_annealing(f, s_0, t_0, neighbourhood_func, temp_reduc_func, acc_pr
         # Reduce the temperature and increment the iteration counter
         temperature = temp_reduc_func(temperature)
         iteration_counter += 1
+    step_array.append((solution, temperature))
     return (step_array, solution)
 
 
-# In[3]:
+# In[38]:
 
-
-# Graph the results (data is a tuple of x's and tempaturature per epoch)
 
 def plot_problem(f, xrange, data, print_data=False): 
+    xs = np.linspace(xrange[0], xrange[1], 2*(xrange[1]-xrange[0]))
+    ys = np.array([f(i) for i in xs ])
+    
+    data_length = len(data)
+    s_0 = data[0][0]
+    s_n = data[-1][0]
+    
+    temperatures = np.array([round(i[1], 2) for i in data])
+    xdata = np.array([i[0] for i in data])
+    xplots = np.array([round(i, 2) for i in xdata])
+    yplots = np.array([round(f(i), 2) for i in xdata])
+    
+    # Work out bounds of graph
+    height = (f(xrange[0]), f(xrange[1]))
+    width = xrange
+    midpoint = ((width[0]+width[1])/2, (height[0]+height[1])/2)
+
+    # MatPlotLib
+    
+    # Plot the results against problem line
+    plt.title("Results against problem line")
+    plt.plot(xs, ys, '-g', label="f(x)")
+    plt.plot(xplots, yplots, "ok", label="Results")
+    
+    # Annotate first and last plots
+    plt.annotate(s="Start point", xy=(xplots[0], yplots[0]), xytext=(midpoint[0], midpoint[1]+70), arrowprops=dict(arrowstyle='->'))
+    plt.annotate(s="Finish point", xy=(xplots[-1], yplots[-1]), xytext=(midpoint[0], midpoint[1]+30), arrowprops=dict(arrowstyle='->'))
+    
+    plt.legend(framealpha=0.4)
+    plt.xlabel("x")
+    plt.ylabel("f(x)")
+    plt.show()
+    if (print_data == True):
+        print("Plot data (2DP)\n_____________________________________\nEpoch\tTemperature\tSolution")
+        for i in range(data_length):
+            print("{}\t{}\t\t({}, {})".format(i, temperatures[i], xplots[i], yplots[i]))
+            
+# Graph the results (data is a tuple of x's and tempaturature per epoch)
+
+def plot_problem_wth_temp(f, xrange, data, print_data=False): 
     xs = np.linspace(xrange[0], xrange[1], 2*(xrange[1]-xrange[0]))
     ys = np.array([f(i) for i in xs ])
     
@@ -164,7 +203,7 @@ def stop_cond(iteration_counter, max_i, solution, prev_solution):
     return False
 
 
-# In[6]:
+# In[24]:
 
 
 # Run simulated annealing (test)
@@ -172,94 +211,29 @@ simulated_annealing_results = simulated_annealing(problem_function, s_0,
                     t_0, neighbourhood_func, temp_reduc_func, acc_prob_func, stop_cond, max_i, max_epoch, True)
 
 
-# In[71]:
+# In[25]:
 
 
 # Graph results
-plot_problem(problem_function, (-5, 125), simulated_annealing_results[0])
+plot_problem_wth_temp(problem_function, (-5, 125), simulated_annealing_results[0])
 
 
-# In[72]:
+# In[26]:
 
 
 # Graph results
-plot_problem(problem_function, (90, 120), simulated_annealing_results[0])
+plot_problem_wth_temp(problem_function, (90, 120), simulated_annealing_results[0])
 
 
-# In[4]:
+# In[9]:
 
 
-# Graph the accuraty of a model when multiple batches are run with different starting values
-import statistics as stat
-from mpl_toolkits.mplot3d import Axes3D as plot3d
-
-def plot_2d_batch_accuracy(dependant_variable_name, independant_variable_name, expected_dependant_value, data): 
-    data_length = len(data)
-    xs = np.array([i["x"] for i in data])
-    ys = np.array([i["y"] for i in data])
-
-    # MatPlotLib
-    
-    # How independant var affects dependant var (using other starting vars)
-    plt.title('{} with respect to {}'.format(dependant_variable_name.capitalize(), independant_variable_name))
-    plt.scatter(xs, ys, c='b', marker="d", label="Results")
-    plt.plot([xs[0], xs[-1]], [expected_dependant_value, expected_dependant_value], "-g", label='Target ({})'.format(expected_dependant_value))
-    plt.legend(framealpha=0.4)
-    plt.xlabel(independant_variable_name)
-    plt.ylabel(dependant_variable_name)
-    plt.show()
-    
-    # Calc SD of dependant data
-    sd = stat.stdev(ys, expected_dependant_value)
-    sds = np.array([abs(101-y)/sd for y in ys])
-    
-    # How independant var affects the standard deviation from target (of dependant var)
-    plt.title('Standard deviation with {}'.format(independant_variable_name))
-    plt.scatter(xs, sds, c='r', marker="d", label='SD (1 SD = {})'.format(round(sd, 2)))
-    plt.legend(framealpha=0.4)
-    plt.xlabel(independant_variable_name)
-    plt.ylabel('Standard deviation from target ({})'.format(expected_dependant_value))
-    plt.show()
-    
-
-def plot_3d_batch_accuracy(x_name, y_name, z_name, expected_z_value, data):
-    
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    #plt.title('How {} & {} affect {}'.format(str.capitalize(x_name), y_name, z_name))
-
-    xs = np.array([d["x"] for d in data])
-    ys = np.array([d["y"] for d in data])
-    zs = np.array([d["z"] for d in data])    
-
-    # Plot a 3d scatter of the data
-    ax.scatter(xs, ys, zs, c="b", marker="x")
-
-    # Customize the z axis.
-    ax.set_xlabel(x_name)
-    ax.set_ylabel(y_name)
-    ax.set_zlabel(z_name)
-    plt.show()
-    
-    # Calc SD of dependant data
-    sd = stat.stdev(zs, expected_z_value)
-    sds = np.array([abs(101-z)/sd for z in zs])
-    
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-   # plt.title('Standard deviation with {} & {}'.format(x_name, y_name))
-    
-    # Plot a 3d scatter of the data with SD 
-    ax.scatter(xs, ys, sds, c="r", marker="x")
-
-    # Customize the z axis.
-    ax.set_xlabel(x_name)
-    ax.set_ylabel(y_name)
-    ax.set_zlabel('Standard deviation from target ({})'.format(expected_z_value))
-    plt.show()
+# Imports my plotting module
+sys.path.append('../../modules')
+import batch_plotting as batch_plt
 
 
-# In[75]:
+# In[10]:
 
 
 #Run the simulated annealing on a range of different starting positions
@@ -272,13 +246,13 @@ for i in range(60):
     accuracy_wth_respect_to_starting_position.append({"x": start, "y": s_a_result, "diff_to_target": abs(101-s_a_result)})
 
 
-# In[82]:
+# In[11]:
 
 
-plot_2d_batch_accuracy("final solution (s_n)", "starting point (s_0)", 101, accuracy_wth_respect_to_starting_position)
+batch_plt.plot_2d_batch_accuracy("final solution (s_n)", "starting point (s_0)", 101, accuracy_wth_respect_to_starting_position)
 
 
-# In[86]:
+# In[9]:
 
 
 #Run the simulated annealing on a range of different starting temperatures and temperature reduction gradients
@@ -304,20 +278,20 @@ accuracy_wth_respect_to_temp_at_101 = accuracy_with_temp(101)
 accuracy_wth_respect_to_temp_at_120 = accuracy_with_temp(120)
 
 
-# In[99]:
+# In[10]:
 
 
 print("When s_0 is 80")
-plot_3d_batch_accuracy("start temperature (t_0)", "temperature gradient", "result (s_n)", 101, accuracy_wth_respect_to_temp_at_80)
+batch_plt.plot_3d_batch_accuracy("start temperature (t_0)", "temperature gradient", "result (s_n)", 101, accuracy_wth_respect_to_temp_at_80)
 
 print("When s_0 is 101")
-plot_3d_batch_accuracy("start temperature (t_0)", "temperature gradient", "result (s_n)", 101, accuracy_wth_respect_to_temp_at_101)
+batch_plt.plot_3d_batch_accuracy("start temperature (t_0)", "temperature gradient", "result (s_n)", 101, accuracy_wth_respect_to_temp_at_101)
 
 print("When s_0 is 120")
-plot_3d_batch_accuracy("start temperature (t_0)", "temperature gradient", "result (s_n)", 101, accuracy_wth_respect_to_temp_at_120)
+batch_plt.plot_3d_batch_accuracy("start temperature (t_0)", "temperature gradient", "result (s_n)", 101, accuracy_wth_respect_to_temp_at_120)
 
 
-# In[5]:
+# In[11]:
 
 
 # Create a neighbourhood of pairs amount of points either side of x, which have a difference of step.
@@ -331,13 +305,13 @@ def flexible_neighbourhood_func(x, step=0.1, pairs=1):
     return neighbourhood
 
 
-# In[6]:
+# In[12]:
 
 
 flexible_neighbourhood_func(1, 0.2, 2)
 
 
-# In[10]:
+# In[13]:
 
 
 def accuracy_with_neighbourhood(s_0):
@@ -359,17 +333,132 @@ accuracy_wth_respect_to_nh_at_101 = accuracy_with_neighbourhood(101)
 accuracy_wth_respect_to_nh_at_120 = accuracy_with_neighbourhood(120)
 
 
-# In[11]:
+# In[15]:
 
 
 print("When s_0 is 80")
-plot_3d_batch_accuracy("step", "pairs of neighbourhood values", "result (s_n)", 101, accuracy_wth_respect_to_nh_at_80)
+batch_plt.plot_3d_batch_accuracy("step", "pairs of neighbourhood values", "result (s_n)", 101, accuracy_wth_respect_to_nh_at_80)
 
 print("When s_0 is 101")
-plot_3d_batch_accuracy("step", "pairs of neighbourhood values", "result (s_n)", 101, accuracy_wth_respect_to_nh_at_101)
+batch_plt.plot_3d_batch_accuracy("step", "pairs of neighbourhood values", "result (s_n)", 101, accuracy_wth_respect_to_nh_at_101)
 
 print("When s_0 is 120")
-plot_3d_batch_accuracy("step", "pairs of neighbourhood values", "result (s_n)", 101, accuracy_wth_respect_to_nh_at_120)
+batch_plt.plot_3d_batch_accuracy("step", "pairs of neighbourhood values", "result (s_n)", 101, accuracy_wth_respect_to_nh_at_120)
+
+
+# In[15]:
+
+
+# Batch testing with stop_condition, iterations & epochs
+def accuracy_with_stop_condition(s_0, stop_condition):
+    results = []
+    for e in range(1, 11):
+        for i in range(50):
+            s_a_result = simulated_annealing(problem_function, s_0, t_0, neighbourhood_func, temp_reduc_func, acc_prob_func, stop_condition, i, e)[1]
+            results.append({"x": e, "y": i, "z": s_a_result})
+    return results
+
+
+# In[39]:
+
+
+print("#1 Stop condition is iteration based")
+def stop_condition_1(i, max_i, s, prev_s):
+    if (i < max_i):
+        return False
+    else:
+        return True
+    
+print("Example run through")
+sa_results = simulated_annealing(problem_function, s_0, t_0, neighbourhood_func, temp_reduc_func, acc_prob_func, stop_condition_1, max_i, max_epoch)
+plot_problem(problem_function, (-5, 125), sa_results[0], True)
+
+
+# In[17]:
+
+
+print("Batch testing with varied iterations and epochs")
+#starting at s_0 = 80 (-21 from target)
+accuracy_wth_respect_to_sc_at_80_1 = accuracy_with_stop_condition(80, stop_condition_1)
+#starting at s_0 = 101 (on target)
+accuracy_wth_respect_to_sc_at_101_1 = accuracy_with_stop_condition(101, stop_condition_1)
+#starting at s_0 = 120 (+21 from target)
+accuracy_wth_respect_to_sc_at_120_1 = accuracy_with_stop_condition(120, stop_condition_1)
+
+print("When s_0 is 80")
+batch_plt.plot_3d_batch_accuracy("epochs", "iterations (max_i)", "result (s_n)", 101, accuracy_wth_respect_to_sc_at_80_1)
+print("When s_0 is 101")
+batch_plt.plot_3d_batch_accuracy("epochs", "iterations (max_i)", "result (s_n)", 101, accuracy_wth_respect_to_sc_at_101_1)
+print("When s_0 is 120")
+batch_plt.plot_3d_batch_accuracy("epochs", "iterations (max_i)", "result (s_n)", 101, accuracy_wth_respect_to_sc_at_120_1)
+
+
+# In[40]:
+
+
+print("#2 Stop condition is solution difference based")
+def stop_condition_2(i, max_i, s, prev_s):
+    if (abs(s-prev_s) <= 0.1):
+        return True
+    else:
+        return False
+    
+print("Example run through")
+sa_results = simulated_annealing(problem_function, s_0, t_0, neighbourhood_func, temp_reduc_func, acc_prob_func, stop_condition_2, max_i, max_epoch)
+plot_problem(problem_function, (-5, 125), sa_results[0], True)
+
+
+# In[36]:
+
+
+print("Batch testing with varied iterations and epochs")
+#starting at s_0 = 80 (-21 from target)
+accuracy_wth_respect_to_sc_at_80_2 = accuracy_with_stop_condition(80, stop_condition_2)
+#starting at s_0 = 101 (on target)
+accuracy_wth_respect_to_sc_at_101_2 = accuracy_with_stop_condition(101, stop_condition_2)
+#starting at s_0 = 120 (+21 from target)
+accuracy_wth_respect_to_sc_at_120_2 = accuracy_with_stop_condition(120, stop_condition_2)
+
+print("When s_0 is 80")
+batch_plt.plot_3d_batch_accuracy("epochs", "iterations (max_i)", "result (s_n)", 101, accuracy_wth_respect_to_sc_at_80_2)
+print("When s_0 is 101")
+batch_plt.plot_3d_batch_accuracy("epochs", "iterations (max_i)", "result (s_n)", 101, accuracy_wth_respect_to_sc_at_101_2)
+print("When s_0 is 120")
+batch_plt.plot_3d_batch_accuracy("epochs", "iterations (max_i)", "result (s_n)", 101, accuracy_wth_respect_to_sc_at_120_2)
+
+
+# In[47]:
+
+
+print("#3 Stop condition is solution output difference based")
+def stop_condition_3(i, max_i, s, prev_s):
+    if (abs(problem_function(s)-problem_function(prev_s)) <= 0.1):
+        return True
+    else:
+        return False
+    
+print("Example run through")
+sa_results = simulated_annealing(problem_function, s_0, t_0, neighbourhood_func, temp_reduc_func, acc_prob_func, stop_condition_3, max_i, max_epoch)
+plot_problem(problem_function, (-5, 125), sa_results[0], True)
+
+
+# In[46]:
+
+
+print("Batch testing with varied iterations and epochs")
+#starting at s_0 = 80 (-21 from target)
+accuracy_wth_respect_to_sc_at_80_3 = accuracy_with_stop_condition(80, stop_condition_3)
+#starting at s_0 = 101 (on target)
+accuracy_wth_respect_to_sc_at_101_3 = accuracy_with_stop_condition(101, stop_condition_3)
+#starting at s_0 = 120 (+21 from target)
+accuracy_wth_respect_to_sc_at_120_3 = accuracy_with_stop_condition(120, stop_condition_3)
+
+print("When s_0 is 80")
+batch_plt.plot_3d_batch_accuracy("epochs", "iterations (max_i)", "result (s_n)", 101, accuracy_wth_respect_to_sc_at_80_3)
+print("When s_0 is 101")
+batch_plt.plot_3d_batch_accuracy("epochs", "iterations (max_i)", "result (s_n)", 101, accuracy_wth_respect_to_sc_at_101_3)
+print("When s_0 is 120")
+batch_plt.plot_3d_batch_accuracy("epochs", "iterations (max_i)", "result (s_n)", 101, accuracy_wth_respect_to_sc_at_120_3)
 
 
 # In[ ]:
