@@ -4,6 +4,11 @@ import matplotlib.pyplot as plt
 import statistics as stat
 from mpl_toolkits.mplot3d import Axes3D as plot3d
 
+def get_sd(z, expected_z, sd):
+    if sd == 0.0:
+        return 0.0
+    else:
+        return abs(expected_z-z)/sd
 
 def plot_2d_batch_accuracy(dependant_variable_name, independant_variable_name, expected_dependant_value, data):
     data_length = len(data)
@@ -23,7 +28,7 @@ def plot_2d_batch_accuracy(dependant_variable_name, independant_variable_name, e
 
     # Calc SD of dependant data
     sd = stat.stdev(ys, expected_dependant_value)
-    sds = np.array([abs(101-y)/sd for y in ys])
+    sds = np.array([get_sd(y, expected_dependant_value, sd) for y in ys])
 
     # How independant var affects the standard deviation from target (of dependant var)
     plt.title('Standard deviation with {}'.format(independant_variable_name))
@@ -55,7 +60,7 @@ def plot_3d_batch_accuracy(x_name, y_name, z_name, expected_z_value, data):
 
     # Calc SD of dependant data
     sd = stat.stdev(zs, expected_z_value)
-    sds = np.array([abs(101-z)/sd for z in zs])
+    sds = np.array([get_sd(z, expected_z_value, sd) for z in zs])
 
     fig = plt.figure()
     ax = fig.gca(projection='3d')
