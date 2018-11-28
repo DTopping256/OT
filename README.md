@@ -1,6 +1,5 @@
-# Optimisation Techniques
-
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/DTopping256/OT/master)
+# Optimisation Techniques
 
 This repository contains python and jupyter notebook files which can be opened in a Jupyter notebook environment (or viewed on Github.com), as well as executable python scripts which build graphs (which may take a while to load). For convenience, I have included saved stills of the graphs which can take a long time to create.
 
