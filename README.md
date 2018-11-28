@@ -9,7 +9,7 @@ This repository contains python and jupyter notebook files which can be opened i
 
 ![Problem function](./problem1/problemFunction.png?raw=true "Problem function")
 
-I defined this in the function: [problem_function](./problem1/simulatedAnnealing/simulatedAnnealing.py#L15)
+I defined this in the [problem_function](./modules/problem_function.py) module which I import in all my metaheuristics code.
 
 It plots this graph:
 
