@@ -1,12 +1,12 @@
 # Simulated Annealing
 
-_[See notebook on Github for step by step workings](./simulatedAnnealing.ipynb) or open problem1/simulatedAnnealing.ipynb in Jupyter notebook_
+_Source code: [notebook](./simulatedAnnealing.ipynb) or [python script](./simulatedAnnealing.py)_
 
-You can run the python script or import the ipynb into jupyter notebook to get fresh graphs, SA being stochastic will create different graphs each time but they will be very similar with the current settings.
+Being stochastic, SA will create different graphs each time but they will be very similar with the same settings.
 
 ## Abstract
 
-I have made a generalised [simulated annealing function](./simulatedAnnealing.py#L42) which I have plugged in many combinations of parameters.
+I have made a generalised function `simulated_annealing` which I can take in many parameters.
 
 Throughout testing I found that the 2 minima picked up by simulated annealing are -1 and 101, and I have shown that 101 is the best solution out of the two; so for the rest of this I will refer to 101 as the global minimum and -1 as the local minimum. (see the conclusion)
 
@@ -20,7 +20,7 @@ With the [default](./simulatedAnnealing.py#L142) starting parameters, you get so
 
 ![SA (close)](./simulated_annealing_on_f_with_start_vars_close.png?raw=true "SA (close)")
 
-You can see that the simulated annealing can and does often start to overshoot but with the right parameters it finds the global minimum. However, this isn't the case for a lot of combinations of parameters as we will see.
+You can see that the simulated annealing can and does often start to overshoot but with the right parameters it eventually finds the global minimum. However, this isn't the case for a lot of combinations of parameters as we will see.
 
 <hr />
 
@@ -28,7 +28,7 @@ You can see that the simulated annealing can and does often start to overshoot b
 
 Starting with the [default](./simulatedAnnealing.py#L142) parameters:
 
-- `f`: the problem function (defined above)
+- `f`: the problem 1 function (imported from [problem_function](../../modules/problem_function.py) module)
 - `s_0`: 120
 - `t_0`: 1000
 - `neighbourhood_func`: returns the points either side of s by a step size of 0.1 (returns `[x - 0.1, x + 0.1]`)
@@ -136,7 +136,7 @@ For this my independant variables were:
 - Start temperature didn't seem to have a big affect on the algorithm as the results for when a certain temperature gradient is constant are largely, very similar.
 - Temperature gradient had a massive affect with:
   - `g < 0.5` creating a very quick cooling of temperature and intensifying the search (with very low acceptance probability for non minimising neighbour solutions).
-  - `0.5 < g < 0.75` allows for a bit more diversification of the results but as these end up lower than 80 a net minimising towards the local min at -1 is taking place.#
+  - `0.5 < g < 0.75` allows for a bit more diversification of the results but as these end up lower than 80 a net minimising towards the local min at -1 is taking place.
   - `g > 0.75` seems like there is very little temperature loss, creating random like results around 80 (start point) even for low starting temperatures (with the execption of temperatures where `t_0 < 10` it seems)
 
 ![SA](./s0_80_temperature_scatter_sds.png?raw=true "sd scatter s_0 = 80")
@@ -187,6 +187,63 @@ Such that:
 - step size 1, with 3 pairs around x of 5 would yield: `[x - (3 x 1), x - (2 x 1), x - (1 x 1), x + (1 x 1), x + (2 x 1), x + (3 x 1)] = [2, 3, 4, 6, 7, 8]`
 
 Again, I did 3 batch tests with s_0 at: 80, 101 and 120.
+
+### s_0 = 80
+
+![SA](./s0_80_nh_scatter.png?raw=true "result scatter s_0 = 80")
+
+Observations:
+
+- The majority of results occur at 0 (a local minima)
+- A combination of small step size and less neighbourhood pairs, decrease the search space around the starting point; so the end result is closer to the start. (you can see this because the result curves up towards 80 nearer to a step size of 0.00 & a neighbourhood pairs of 1)
+- When the step size & neighbourhood becomes too large the results can become less reliable (the various outliers around a step of 1.75-2.00 and neighbourhood pairs of 6-10)
+
+![SA](./s0_80_nh_scatter_sd.png?raw=true "sd scatter s_0 = 80")
+
+- The highest accuracy was from the small step size and small neighbourhood SA tests.
+- Even with large neighbourhoods small step size can keep the results quite intensified around the start.
+
+### s_0 = 101
+
+![SA](./s0_101_nh_scatter.png?raw=true "result scatter s_0 = 101")
+
+Observations:
+
+- The majority of results again occur at 0 (a local minima), even though the tests started at a global minima
+- There are a larger amount of results at the global minima though since tests started on the global minima
+
+![SA](./s0_101_nh_scatter_sd.png?raw=true "sd scatter s_0 = 101")
+
+- The highest accuracy was from the small step size and small neighbourhood SA tests.
+- Neighbourhood values of 2 with a smaller step perform best and steps closer to 0.1 with small neighbourhoods perform best. Otherwise results tend to jump out of the global minima and end up at the local minima.
+- Large step size and large numbers of neighbourhood pairs again created outliers which didn't find any minima.
+
+### s_0 = 120
+
+![SA](./s0_120_nh_scatter.png?raw=true "result scatter s_0 = 120")
+
+Observations:
+
+- The majority of results again occur at 0 (a local minima)
+- There are a larger amount of results at the global minima though since tests had to step past the global minima to get to the local minima.
+
+![SA](./s0_120_nh_scatter_sd.png?raw=true "sd scatter s_0 = 120")
+
+- The highest accuracy was from the small step size and small neighbourhood SA tests.
+- Neighbourhood values of 2 with a smaller step perform best and steps closer to 0.1 with small neighbourhoods perform best. Otherwise results tend to jump out of the global minima and end up at the local minima.
+- Large step size and large numbers of neighbourhood pairs again created outliers which didn't find any minima.
+
+<hr />
+
+## Stop condition
+
+Up until now an iteration based stop condition has been used.
+
+We will now experiment with various stop condition functions when batch tested over different max_epoch and max_iteration values, these stop conditions are:
+
+- Stop when reaching max_iteration
+- Stop when the `x` difference is less than 0.1 (step size) after an iteration of epochs
+- Stop when the solution `f(x)` difference is less than 0.1
 
 <hr />
 
