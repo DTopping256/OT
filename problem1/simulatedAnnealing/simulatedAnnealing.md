@@ -8,7 +8,7 @@ Being stochastic, SA will create different graphs each time but they will be ver
 
 I have made a generalised function `simulated_annealing` which I can take in many parameters.
 
-Throughout testing I found that the 2 minima picked up by simulated annealing are -1 and 101, and I have shown that 101 is the best solution out of the two; so for the rest of this I will refer to 101 as the global minimum and -1 as the local minimum. (see the conclusion)
+Throughout testing I found that the 2 minima picked up by simulated annealing are 0 and 101, and I have shown that 101 is the best solution out of the two; so for the rest of this I will refer to 101 as the global minimum and 0 as the local minimum. (see the conclusion)
 
 <hr />
 
@@ -115,7 +115,7 @@ For this independant variable I tested a range of starting points from -5 to 120
 
 ![SA](./variable_starting_point_scatter_sds.png?raw=true "standard deviation scatter")
 
-Values of 90 < x < 200 are a good start point for the model (with these other starting settings); however with a starting point of x < 90 the model does tend to fall towards the local minimum at x = -1, and with a start x > 200 the start point is too far from the solution with these parameters.
+Values of 90 < x < 200 are a good start point for the model (with these other starting settings); however with a starting point of x < 90 the model does tend to fall towards the local minimum at x = 0, and with a start x > 200 the start point is too far from the solution with these parameters.
 
 <hr />
 
@@ -136,7 +136,7 @@ For this my independant variables were:
 - Start temperature didn't seem to have a big affect on the algorithm as the results for when a certain temperature gradient is constant are largely, very similar.
 - Temperature gradient had a massive affect with:
   - `g < 0.5` creating a very quick cooling of temperature and intensifying the search (with very low acceptance probability for non minimising neighbour solutions).
-  - `0.5 < g < 0.75` allows for a bit more diversification of the results but as these end up lower than 80 a net minimising towards the local min at -1 is taking place.
+  - `0.5 < g < 0.75` allows for a bit more diversification of the results but as these end up lower than 80 a net minimising towards the local min at 0 is taking place.
   - `g > 0.75` seems like there is very little temperature loss, creating random like results around 80 (start point) even for low starting temperatures (with the execption of temperatures where `t_0 < 10` it seems)
 
 ![SA](./s0_80_temperature_scatter_sds.png?raw=true "sd scatter s_0 = 80")
@@ -150,9 +150,9 @@ The above uses the same data but the z-axis is standard deviation from 101, to g
 ![SA](./s0_101_temperature_scatter.png?raw=true "result scatter s_0 = 101")
 
 - It seems that when you start near the global minimum irrespective of temperature the majority of results will stay nearby (for this function).
-- Quite a few did jump out of the global minomum though and travel down towards the local minimum at -1.
-- The temperature gradient again strongly influenced how far the solution moved from the start, with lower gradients travelling quite far to -1 and higher ones staying near to 101.
-- Again starting temperature `t_0` didn't have much of an affect upon the end result, although it is more likely that for the first epochs high temperature models will jump out of the global minimum and might end up travelling to -1.
+- Quite a few did jump out of the global minomum though and travel down towards the local minimum at 0.
+- The temperature gradient again strongly influenced how far the solution moved from the start, with lower gradients travelling quite far to 0 and higher ones staying near to 101.
+- Again starting temperature `t_0` didn't have much of an affect upon the end result, although it is more likely that for the first epochs high temperature models will jump out of the global minimum and might end up travelling to 0.
 
 ![SA](./s0_101_temperature_scatter_sds.png?raw=true "sd scatter s_0 = 101")
 
@@ -166,7 +166,7 @@ The above uses the same data but the z-axis is standard deviation from 101, to g
 - Start temperature didn't seem to have a big affect on the algorithm as the results for when a certain temperature gradient is constant are largely, very similar.
 - Temperature gradient had a massive affect with:
   - `g < 0.5` creating a very quick cooling of temperature and intensifying the search (with very low acceptance probability for non minimising neighbour solutions).
-  - `0.5 < g < 0.75` allows for a bit more diversification of the results but as these end up lower than 80 a net minimising towards the local min at -1 is taking place.#
+  - `0.5 < g < 0.75` allows for a bit more diversification of the results but as these end up lower than 80 a net minimising towards the local min at 0 is taking place.#
   - `g > 0.75` seems like there is very little temperature loss, creating random like results around 80 (start point) even for low starting temperatures (with the execption of temperatures where `t_0 < 10` it seems)
 
 ![SA](./s0_120_temperature_scatter_sds.png?raw=true "sd scatter s_0 = 120")
@@ -249,12 +249,12 @@ We will now experiment with various stop condition functions when batch tested o
 
 ## Conclusion
 
-The two minima found by the algorithm (when the parameters are abjusted) were x = -1 and x = 101.
+The two minima found by the algorithm (when the parameters are abjusted) were x = 0 and x = 101.
 
-We can simply do f(-1) and f(101) to determine the best.
+We can simply do f(0) and f(101) to determine the best.
 
-- f(-1) = -0.999900005
-- f(101) = -1.367879441
+- f(0) = -1
+- f(101) = ~ -1.37
 
 So x = 101 is the best solution out of the minima found from these tests.
 
