@@ -1,6 +1,6 @@
 # Genetic Algorithms
 
-_Source code: [notebook](./geneticAlgorithms.ipynb) or [python script](./geneticAlgorithms.py)_
+_Source code: [notebook](./geneticAlgorithm.ipynb) or [python script](./geneticAlgorithm.py)_
 
 Being stochastic, GA's will create different graphs each time but they will be very similar with the same settings.
 
