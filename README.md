@@ -27,7 +27,7 @@ The metaheuristics used were the following:
 
 #### [Taboo Search](./problem1/tabooSearch/tabooSearch.md)
 
-#### [Genetic Algorithm](./problem1/geneticAlgorithm/geneticAlgorithm.md)
+#### [Genetic Algorithm](./problem1/geneticAlgorithms/geneticAlgorithms.md)
 
 ## Problem 2
 
