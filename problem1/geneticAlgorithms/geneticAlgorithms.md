@@ -164,7 +164,7 @@ I fixed mutation chance to 0.1 (10%) following these findings.
 
 _Note: generations in this algorithm start counting from 0_
 
-I wrote 3 selection functions based upon selection methods I researched online, they are:
+I wrote 3 selection functions based upon selection methods I researched online (Blinkie and Thiele, 1995), they are:
 
 - Truncation selection (the default one I use)
 - Fitness proportionate selection
@@ -189,3 +189,9 @@ After 5 generations the high density of the population shifts upto the global mi
 ![trunc_selection_results](./tourn_ga_results_per_generation.png)
 
 Thus tournament selection seems to be the best selection method since it finds the best solution in the least amount of generations.
+
+<hr />
+
+## References
+
+(Blinkie and Thiele, 1995) - Blinkie, T. and Thiele, L. (1995). A Comparison of Selection Schemes used in Genetic Algorithms. 2nd ed. [ebook] Zurich: Swiss Federal Institute of Technology, pp.14, 23, 40. Available at: https://www.tik.ee.ethz.ch/file/6c0e384dceb283cd4301339a895b72b8/TIK-Report11.pdf [Accessed 6 Dec. 2018].
