@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[7]:
+# In[1]:
 
 
 import math
@@ -16,7 +16,7 @@ sys.path.append('../../modules')
 from problem_function import f as fitness_function
 
 
-# In[6]:
+# In[2]:
 
 
 def encode_dna(solution):
@@ -49,7 +49,7 @@ def decode_dna(dna):
     return float("".join(dna))
 
 
-# In[8]:
+# In[3]:
 
 
 # Test that I can encode and decode a value to get the same value out (to 6 SF & 3 DP).
@@ -59,7 +59,7 @@ solution = decode_dna(dna)
 print("Solution: {}".format(solution))
 
 
-# In[55]:
+# In[4]:
 
 
 import random
@@ -87,7 +87,7 @@ def mutate_dna(dna, chance = None, sign_change_chance = None):
     return dna
 
 
-# In[58]:
+# In[5]:
 
 
 dna = encode_dna(200.000)
@@ -96,13 +96,13 @@ for i in range(100):
     print(dna)
 
 
-# In[11]:
+# In[6]:
 
 
 decode_dna(dna)
 
 
-# In[12]:
+# In[9]:
 
 
 def cross_over(dna1, dna2, cross_over_amount):
@@ -121,13 +121,13 @@ def cross_over(dna1, dna2, cross_over_amount):
     return resultant_dna
 
 
-# In[13]:
+# In[10]:
 
 
 cross_over(encode_dna(111.111), encode_dna(-222.222), 4)
 
 
-# In[14]:
+# In[11]:
 
 
 class individual:
@@ -146,7 +146,7 @@ class individual:
         return self.gen
 
 
-# In[10]:
+# In[12]:
 
 
 # Test of random individual instance values
@@ -155,7 +155,7 @@ for i in range(20):
     print(indiv.get_value())
 
 
-# In[15]:
+# In[13]:
 
 
 # Default cross over amount
@@ -177,7 +177,7 @@ def breed_individuals(ind1, ind2, cross_over_amount=None, mutation_chance=None, 
     return individual(new_dna, next_gen)
 
 
-# In[16]:
+# In[14]:
 
 
 individual1 = individual(encode_dna(111.111), 1)
@@ -185,13 +185,13 @@ individual2 = individual(encode_dna(-222.222), 2)
 new_individual = breed_individuals(individual1, individual2, 3, 1)
 
 
-# In[176]:
+# In[15]:
 
 
 new_individual.get_value()
 
 
-# In[240]:
+# In[16]:
 
 
 # Default GA parameters
@@ -245,7 +245,7 @@ def genetic_algorithm(population_size, epochs, fitness_upper_bound, selection_fu
     return (cumulative_population, solution)
 
 
-# In[165]:
+# In[17]:
 
 
 # Graph the results of one full GA run
@@ -315,25 +315,25 @@ def plot_genetic_algorithm_metaheuristic(f, xrange, results, print_data=False):
     plt.show()
 
 
-# In[208]:
+# In[18]:
 
 
 ga_results = genetic_algorithm(POP_SIZE, EPOCHS, FITNESS_UPPER_BOUND, selection_func, CROSS_OVER_AMOUNT, MUTATION_CHANCE, SIGN_CHANGE_CHANCE, True)
 
 
-# In[209]:
+# In[19]:
 
 
 plot_genetic_algorithm_metaheuristic(fitness_function, (-5, 125), ga_results, True)
 
 
-# In[192]:
+# In[20]:
 
 
 from batch_plotting import plot_2d_batch_accuracy, plot_3d_batch_accuracy
 
 
-# In[211]:
+# In[21]:
 
 
 # Batch testing with population size
@@ -346,7 +346,7 @@ for ps in range(30):
 plot_2d_batch_accuracy("Final solution", "Population size", 101, pop_size_results)
 
 
-# In[213]:
+# In[22]:
 
 
 # CHange pop size default to 1000 as it seems more individuals is better from last test.
@@ -362,7 +362,7 @@ for f in range(20):
 plot_2d_batch_accuracy("Final solution", "Fitness upper-bound", 101, fub_results)
 
 
-# In[217]:
+# In[23]:
 
 
 # CHange Fitness upper-bound default to 20% as it seems setting this too high will decrease the effectiveness of the fitness function.
@@ -378,7 +378,7 @@ for e in range(10):
 plot_2d_batch_accuracy("Final solution", "Epochs/Generations", 101, epoch_results)
 
 
-# In[251]:
+# In[24]:
 
 
 # The number of epochs can be reduced to save on computing power since more doesn't increase the accuracy
@@ -394,7 +394,7 @@ for cross_over_amount in range(6):
 plot_2d_batch_accuracy("Final solution", "Cross over amount", 101, coa_results)
 
 
-# In[221]:
+# In[25]:
 
 
 # A high amount 0f cross over tends to create less meaningful values than low crossover
@@ -411,7 +411,7 @@ for mc in range(30):
 plot_2d_batch_accuracy("Final solution", "Mutation chance", 101, mc_results)
 
 
-# In[246]:
+# In[26]:
 
 
 # Low mutation chance, but not too low (for a bit of diversification) to increase accuracy.
@@ -450,20 +450,20 @@ def tournament_selection(i, population):
     return (individuals[0], individuals[1])
 
 
-# In[252]:
+# In[28]:
 
 
 print("GA run through, with default (truncation) selection function.")
-regular_ga_results = genetic_algorithm(POP_SIZE, EPOCHS, FITNESS_UPPER_BOUND, selection_func, CROSS_OVER_AMOUNT, MUTATION_CHANCE, SIGN_CHANGE_CHANCE)
-plot_genetic_algorithm_metaheuristic(fitness_function, (-5, 125), fps_ga_results, True)
+trunc_ga_results = genetic_algorithm(POP_SIZE, EPOCHS, FITNESS_UPPER_BOUND, selection_func, CROSS_OVER_AMOUNT, MUTATION_CHANCE, SIGN_CHANGE_CHANCE)
+plot_genetic_algorithm_metaheuristic(fitness_function, (-5, 125), trunc_ga_results, True)
 
 print("GA run through, with fitness proportionate selection.")
 fps_ga_results = genetic_algorithm(POP_SIZE, EPOCHS, FITNESS_UPPER_BOUND, fitness_proportionate_selection, CROSS_OVER_AMOUNT, MUTATION_CHANCE, SIGN_CHANGE_CHANCE)
 plot_genetic_algorithm_metaheuristic(fitness_function, (-5, 125), fps_ga_results, True)
 
 print("GA run through, with tournament selection; where p=1/3")
-fps_ga_results = genetic_algorithm(POP_SIZE, EPOCHS, FITNESS_UPPER_BOUND, tournament_selection, CROSS_OVER_AMOUNT, MUTATION_CHANCE, SIGN_CHANGE_CHANCE)
-plot_genetic_algorithm_metaheuristic(fitness_function, (-5, 125), fps_ga_results, True)
+tourn_ga_results = genetic_algorithm(POP_SIZE, EPOCHS, FITNESS_UPPER_BOUND, tournament_selection, CROSS_OVER_AMOUNT, MUTATION_CHANCE, SIGN_CHANGE_CHANCE)
+plot_genetic_algorithm_metaheuristic(fitness_function, (-5, 125), tourn_ga_results, True)
 
 
 # In[ ]:
