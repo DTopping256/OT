@@ -130,9 +130,10 @@ def plot_problem(f, xrange, data, print_data=False):
             print("{}".format(x))
 
 
-# In[4]:
+# In[14]:
 
 
+# Default parameters
 x_0 = 120
 max_i = 100
 step_m = 0.1
@@ -152,7 +153,7 @@ gradient_descent_results = gradient_descent(derived_problem_function, x_0, max_i
 plot_problem(problem_function, (-5, 125), gradient_descent_results[0])
 
 
-# In[16]:
+# In[7]:
 
 
 # Imports my plotting module
@@ -160,7 +161,7 @@ sys.path.append('../../modules')
 import batch_plotting as batch_plt
 
 
-# In[19]:
+# In[8]:
 
 
 # Batch test gradient descent with different starting points
@@ -170,20 +171,20 @@ for start_x in range(80, 120):
     starting_point_results.append({"x": start_x, "y": result[1]})
 
 
-# In[23]:
+# In[9]:
 
 
 batch_plt.plot_2d_batch_accuracy("finish point (x_n)", "starting point (x_0)", 101, starting_point_results)
 
 
-# In[24]:
+# In[19]:
 
 
 # Batch test gradient descent with different max_iterations
 starting_points = [80, 101, 120]
 for starting_point in starting_points:
     iteration_results = []
-    for max_iter in range(80, 120):
+    for max_iter in range(40):
         result = gradient_descent(derived_problem_function, starting_point, max_iter, step_m, e_g, e_x)
         iteration_results.append({"x": max_iter, "y": result[1]})
 
@@ -191,7 +192,7 @@ for starting_point in starting_points:
     batch_plt.plot_2d_batch_accuracy("finish point (x_n)", "iterations (max_i)", 101, iteration_results)
 
 
-# In[33]:
+# In[11]:
 
 
 # Batch test gradient descent with different step_multipliers
@@ -207,15 +208,15 @@ for starting_point in starting_points:
     batch_plt.plot_2d_batch_accuracy("finish point (x_n)", "step multiplier (step_m)", 101, step_multiplier_results)
 
 
-# In[35]:
+# In[23]:
 
 
 # Batch test gradient descent with different gradient tolerances
 start_points = [80, 101, 120]
 for starting_point in starting_points:
     e_g_results = []
-    for i in range(0, 20):
-        e_grad = (50*i+1)/1000
+    for i in range(40):
+        e_grad = 5*(i+1)/1000
         result = gradient_descent(derived_problem_function, starting_point, max_i, step_m, e_grad, e_x)
         e_g_results.append({"x": e_grad, "y": result[1]})
 
@@ -223,7 +224,7 @@ for starting_point in starting_points:
     batch_plt.plot_2d_batch_accuracy("finish point (x_n)", "gradient tolerance (e_g)", 101, e_g_results)
 
 
-# In[37]:
+# In[13]:
 
 
 # Batch test gradient descent with different x difference tolerances
@@ -236,11 +237,5 @@ for starting_point in starting_points:
         e_x_results.append({"x": e_diffx, "y": result[1]})
 
     print("Starting at {}".format(starting_point))
-    batch_plt.plot_2d_batch_accuracy("finish point (x_n)", "x difference tolerance (e_g)", 101, e_x_results)
-
-
-# In[ ]:
-
-
-
+    batch_plt.plot_2d_batch_accuracy("finish point (x_n)", "x difference tolerance (e_x)", 101, e_x_results)
 
