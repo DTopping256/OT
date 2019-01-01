@@ -14,3 +14,15 @@ def diff_f(x):
         return float(e**(-(x/100)**2)/5000)
     else:
         return float(2*(x - 101))
+    
+# Data wrapper for a problem.
+'''
+    f: the problem function, should return a float.
+    dfs: an array of partial derivative functions of f, each of which should return a float. 
+    maximisation: True or False, if false is a minimisation problem.
+'''
+class problem:
+    def __init__(self, f, dfs, maximisation = False):
+        self.maximisation = maximisation
+        self.f = f
+        self.dfs = dfs

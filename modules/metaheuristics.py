@@ -1,21 +1,11 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
-
-
 get_ipython().system('pip install numpy')
 
-
-# In[4]:
-
-
 import random
+import math
 import numpy as np
-
-
-# In[1]:
-
 
 ###### Gradient Descent stuff
 '''
@@ -61,7 +51,6 @@ def gradient_descent(df, x_0, max_i, step_m, e_g, e_x, print_workings=False):
     step_array.append(current_x)
     # Return a tuple of all steps and final answer
     return (step_array, current_x)
-
 
 ###### Simulated annealing stuff
 '''
@@ -111,10 +100,6 @@ def simulated_annealing(f, s_0, t_0, neighbourhood_func, temp_reduc_func, acc_pr
     step_array.append((solution, temperature))
     return (step_array, solution)
 
-
-# In[ ]:
-
-
 ###### Taboo search stuff
 '''
         f                  :   The problem function which is being investigated by the metaheuristic.
@@ -128,6 +113,8 @@ def taboo_search(f, s0, stopping_cond, taboo_memory, neighbourhood_func, print_w
     taboo_list = [s0]
     s = s0
     i = 1
+    # Keeps track of where the algorithm has been (without affecting the answer)
+    history = [s]
     viable_neighbours = None
     while not stopping_cond(i, s, viable_neighbours, **stop_args):
         neighbourhood = neighbourhood_func(s, **neighbourhood_args)
@@ -140,39 +127,80 @@ def taboo_search(f, s0, stopping_cond, taboo_memory, neighbourhood_func, print_w
                 best_neighbour = n                
         if (f(best_neighbour) < f(s)):
             s = best_neighbour
+            history.append(s)
         if (len(taboo_list) == taboo_memory):
             taboo_list.pop(0)
         taboo_list.append(best_neighbour)
         if (print_workings == True):
             print("Iteration: {},\tCurrent solution: {},\tTaboo list: {}".format(i, s, taboo_list))
         i += 1
-    return s
+    #Add final solution
+    history.append(s)
+    return (history, s)
 
+###### Genetic algorithm stuff
 
-# In[2]:
+# GA specific functions wrapper
+class GA_functions:
+    def __init__(self, initial_val, encode_dna, decode_dna, mutate_dna, cross_over):
+        self.initial_val = initial_val
+        self.encode_dna = encode_dna
+        self.decode_dna = decode_dna
+        self.mutate_dna = mutate_dna
+        self.cross_over = cross_over
 
-
-###### Genetic Algorithm Stuff
+# GA default variables wrapper
+class GA_defaults:
+    def __init__(self, mutation_chance, sign_change_chance, cross_over_amount, population_size, epochs, fitness_upper_bound, selection_function):
+        self.mutation_chance = mutation_chance
+        self.sign_change_chance = sign_change_chance
+        self.cross_over_amount = cross_over_amount
+        self.population_size = population_size
+        self.epochs = epochs
+        self.fitness_upper_bound = fitness_upper_bound
+        self.selection_function = selection_function
 
 # Data wrapper for an instance of a member in the 'population'
 class individual:
-    def __init__(self, dna=None, gen=None):
+    def __init__(self, GA_funcs, dna=None, gen=None):
         # If no dna is provided, generate dna from encoding a random float; with a random sign, exponent and significand
-        if (dna == None):
-            start_value = (2 * random.random() - 1) * 10**(random.randrange(0, 4))
-            dna = encode_dna(start_value)
-        self.dna = dna
+        self.GA_funcs = GA_funcs
+        self.dna = GA_funcs.encode_dna(GA_funcs.initial_val()) if dna is None else dna
         self.gen = 0 if gen is None else gen
     def get_dna(self):
         return self.dna
     def get_value(self):
-        return decode_dna(self.dna)
+        return self.GA_funcs.decode_dna(self.dna)
     def get_gen(self):
         return self.gen
 
-# Default GA parameters
+# Creating a new indivual given the GA functions, individuals and a few other optional variables.
+def breed_individuals(i1, i2, GA_defaults, GA_funcs, cross_over_amount=None, mutation_chance=None, sign_change_chance=None):
+    # Set defaults if parameter not provided
+    cross_over_amount = GA_defaults.cross_over_amount if cross_over_amount is None else cross_over_amount
+    mutation_chance = GA_defaults.mutation_chance if mutation_chance is None else mutation_chance
+    sign_change_chance = GA_defaults.sign_change_chance if sign_change_chance is None else sign_change_chance
+    # Calculate the generation number of the offspring.
+    gen1 = i1.get_gen()
+    gen2 = i2.get_gen()
+    next_gen = gen1+1 if gen1 > gen2 else gen2+1
+    # Create the dna of the offspring
+    dna1 = i1.get_dna()
+    dna2 = i2.get_dna()
+    new_dna = GA_funcs.mutate_dna(GA_funcs.cross_over(dna1, dna2, cross_over_amount), mutation_chance, sign_change_chance)
+    return individual(GA_funcs, new_dna, next_gen)
+
+# GA parameters
 '''
         fitness_func         :   The problem function which is being investigated by the metaheuristic.
+        
+        GA_funcs             :   Other GA functions - 
+                                    initial_val,
+                                    encode_dna, 
+                                    decode_dna, 
+                                    mutate_dna, 
+                                    cross_over
+
         population_size      :   The size of the population per generation.
         epochs               :   The number of generations that are produced over the course of the algorithm.
         fitness_upper_bound  :   The percentage of the population which survives before the breeding phase.
@@ -182,11 +210,20 @@ class individual:
         sign_change_chance   :   THe chance that the sign changes in an offsprings dna structure.
 '''
 
-def genetic_algorithm(population_size, epochs, fitness_upper_bound, selection_function, cross_over_amount, mutation_chance, sign_change_chance, show_workings=False):
+def genetic_algorithm(fitness_function, GA_defaults, GA_funcs, population_size=None, epochs=None, fitness_upper_bound=None, selection_function=None, cross_over_amount=None, mutation_chance=None, sign_change_chance=None, show_workings=False):
+    # Default variable assignment
+    population_size = GA_defaults.population_size if population_size is None else population_size
+    epochs = GA_defaults.epochs if epochs is None else epochs
+    fitness_upper_bound = GA_defaults.fitness_upper_bound if fitness_upper_bound is None else fitness_upper_bound
+    selection_function = GA_defaults.selection_function if selection_function is None else selection_function
+    cross_over_amount = GA_defaults.cross_over_amount if cross_over_amount is None else cross_over_amount
+    mutation_chance = GA_defaults.mutation_chance if mutation_chance is None else mutation_chance
+    sign_change_chance = GA_defaults.sign_change_chance if sign_change_chance is None else sign_change_chance
+    
     # Initial population instantiation
     population = []
     for p in range(population_size):
-        population.append(individual())
+        population.append(individual(GA_funcs))
 
     # Genetic algorithm loop
     cumulative_population = []
@@ -207,13 +244,12 @@ def genetic_algorithm(population_size, epochs, fitness_upper_bound, selection_fu
         # Create next generation population
         for p in range(int(len(population)/2)-1):
             individuals = selection_function(p, population)
-            # Create an amount of next generation offspring with these individuals greater than or equal to the amount previous generation  
+            # Create an amount of next generation offspring with these individuals greater than or equal to the amount previous generation 
             for m in range(math.ceil(2/fitness_upper_bound)):
-                next_gen_pop.append(breed_individuals(individuals[0], individuals[1], cross_over_amount, mutation_chance, sign_change_chance))
+                next_gen_pop.append(breed_individuals(individuals[0], individuals[1], GA_defaults, GA_funcs, cross_over_amount, mutation_chance, sign_change_chance))
         # Replace current generation population with new generation population
         population = next_gen_pop[0:population_size]
     # After all the epochs pick the first individual (fittest) in the population and obtain their value.
     solution = population[0].get_value()
     # Return the history of the population (cumulative population) and the solution. 
     return (cumulative_population, solution)
-
