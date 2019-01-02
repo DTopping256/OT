@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-get_ipython().system('pip install numpy')
-
 import random
 import math
 import numpy as np
@@ -116,23 +114,23 @@ def taboo_search(f, s0, stopping_cond, taboo_memory, neighbourhood_func, print_w
     # Keeps track of where the algorithm has been (without affecting the answer)
     history = [s]
     viable_neighbours = None
-    while not stopping_cond(i, s, viable_neighbours, **stop_args):
+    while True:
         neighbourhood = neighbourhood_func(s, **neighbourhood_args)
-        best_neighbour = neighbourhood[0]
+        neighbourhood = list(filter(lambda item: item not in taboo_list, neighbourhood))
         viable_neighbours = len(neighbourhood)
-        for n in neighbourhood:
-            if n in taboo_list:
-                viable_neighbours -= 1
-            elif f(n) < f(best_neighbour):
-                best_neighbour = n                
-        if (f(best_neighbour) < f(s)):
-            s = best_neighbour
-            history.append(s)
-        if (len(taboo_list) == taboo_memory):
-            taboo_list.pop(0)
-        taboo_list.append(best_neighbour)
+        if (viable_neighbours > 0):
+            neighbourhood.sort(key=lambda item: f(item)) 
+            best = neighbourhood[0]          
+            if (f(best) < f(s)):
+                s = best
+                history.append(best)
+            if (len(taboo_list) == taboo_memory):
+                taboo_list.pop(0)
+            taboo_list.append(best)
         if (print_workings == True):
             print("Iteration: {},\tCurrent solution: {},\tTaboo list: {}".format(i, s, taboo_list))
+        if (stopping_cond(i, s, viable_neighbours, **stop_args)):
+            break
         i += 1
     #Add final solution
     history.append(s)
