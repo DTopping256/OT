@@ -192,6 +192,8 @@ def breed_individuals(i1, i2, GA_defaults, GA_funcs, cross_over_amount=None, mut
 '''
         fitness_func         :   The problem function which is being investigated by the metaheuristic.
         
+        GA_defaults          :   Default values of the optional parameters (which follow GA_funcs)
+        
         GA_funcs             :   Other GA functions - 
                                     initial_val,
                                     encode_dna, 
