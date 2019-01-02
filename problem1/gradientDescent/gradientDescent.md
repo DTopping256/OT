@@ -2,11 +2,11 @@
 
 _Source code: [notebook](./gradientDescent.ipynb) or [python script](./gradientDescent.py)_
 
-Gradient descent is deterministic so doesn't need to be run more than once for the same parameters, because its going to yeild the same results.
+Gradient descent is deterministic so doesn't need to be run more than once for the same parameters, because its going to yield the same results.
 
 ## Abstract
 
-I have made a generalised `gradient_descent` function whioch I can alter parameters of to get it to behave differently.
+I have made a generalised `gradient_descent` function in the [metaheuristics module](../../modules/metaheuristics.py) which can take in many parameters.
 
 I found that the 2 minima picked up by gradient descent were at 0 and 101, 101 is the best solution since `f(101) < f(0)`.
 

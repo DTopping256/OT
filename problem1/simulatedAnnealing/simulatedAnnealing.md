@@ -6,9 +6,9 @@ Being stochastic, SA will create different graphs each time but they will be ver
 
 ## Abstract
 
-I have made a generalised function `simulated_annealing` which I can take in many parameters.
+I have made a generalised `simulated_annealing` function in the [metaheuristics module](../../modules/metaheuristics.py) which can take in many parameters.
 
-Throughout testing I found that the 2 minima picked up by simulated annealing are 0 and 101, and I have shown that 101 is the best solution out of the two; so for the rest of this I will refer to 101 as the global minimum and 0 as the local minimum. (see the conclusion)
+Throughout testing I found that the 2 minima picked up by simulated annealing are 0 and 101, and I have shown that 101 is the best solution out of the two; so for the rest of this I will refer to 101 as the global minimum and 0 as the local minimum.
 
 <hr />
 
@@ -33,7 +33,7 @@ Starting with the [default](./simulatedAnnealing.py#L142) parameters:
 - `t_0`: 1000
 - `neighbourhood_func`: returns the points either side of s by a step size of 0.1 (returns `[x - 0.1, x + 0.1]`)
 - `temp_reduc_func`: returns 75% of the current temperature, `t`.
-- `acc_prob_func`: uses the Boltzman distribution to return an acceptance probability of picking a "worse step" [Henderson. D, et al].
+- `acc_prob_func`: uses the Boltzman distribution to return an acceptance probability of picking a "worse step" (Henderson. D, et al, 2003).
 - `stop_cond`: returns `True` when the current iteration reaches the `max_i` variable.
 - `max_i`: 50
 - `max_epoch`: 50
@@ -264,4 +264,4 @@ The success of this algorithm in terms of success (at reaching a good solution) 
 
 ## References
 
-[Henderson. D, et al.] - https://pdfs.semanticscholar.org/2726/93df38b60670a8ea788122a7de353a9a7ff0.pdf (Accessed 30/10/2018)
+(Henderson. D, et al, 2003) - https://pdfs.semanticscholar.org/2726/93df38b60670a8ea788122a7de353a9a7ff0.pdf (Accessed 30/10/2018)

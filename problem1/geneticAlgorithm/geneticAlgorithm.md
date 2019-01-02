@@ -6,7 +6,7 @@ Being stochastic, GA's will create different graphs each time but they will be v
 
 ## Abstract
 
-I have made a generalised function `genetic_algorithm` which I can take in many parameters.
+I have made a generalised `genetic_algorithm` function in the [metaheuristics module](../../modules/metaheuristics.py) which can take in many parameters.
 
 Throughout testing I found that the 2 minima picked up by the genetic algorithm are 0 and 101, and I have shown that 101 is the best solution out of the two; so for the rest of this I will refer to 101 as the global minimum and 0 as the local minimum. (see the conclusion)
 
@@ -189,6 +189,23 @@ After 5 generations the high density of the population shifts upto the global mi
 ![trunc_selection_results](./tourn_ga_results_per_generation.png)
 
 Thus tournament selection seems to be the best selection method since it finds the best solution in the least amount of generations.
+
+<hr />
+
+## Conclusion
+
+GA's although computationally expensive, don't get easily trapped in local minima and don't suffer from the problem of where to start like other methods do, since it is population based; as the population affectively starts spread out across the entire search space.
+
+To summarise, the best parameters for the GA over testing were:
+
+- A large but not excessive **population size** (around **1000** individuals)
+- I decided to truncate my population by the **fittest 20%** (200 individuals) for the next generation produced 10 children per 100 pairs of parents; to maintain population size.
+- The **number of generations** didn't need to be very large for this due to the population size and other factors so I reduced the number of epochs/generations **from 50 to 30**, as this reduced the amount of computation for the rest of the batch tests.
+- The amount of **cross over** was most consistent at **1**.
+- The chance of **mutation** didn't need to be high at all with a **chance of 10%** being about right.
+- The **selection function** quickest at zoning in the population on the global maximum was the **tournament selection** function.
+
+To further improve this GA I would make a better mutation function which would mean a less eratic change in the values encoded by the dna structure.
 
 <hr />
 
