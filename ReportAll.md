@@ -1,6 +1,6 @@
 # Technical report
 
-If this is hard to follow, use the `README.pdf` instead; as this seperates each problem and metaheuristic using links.
+If this is hard to follow, use the `ReportLinked.pdf` instead; as this seperates each problem and metaheuristic using links.
 
 ## Problem 1
 

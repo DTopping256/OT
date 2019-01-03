@@ -1,8 +1,16 @@
+img,
+table {
+  display: block;
+  margin: auto;
+}
+
 img {
   width: 400px;
   height: 300px;
-  display: block;
-  margin: auto;
+}
+
+table {
+  width: 40%;
 }
 
 .default_img_res {

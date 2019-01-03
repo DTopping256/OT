@@ -4,7 +4,7 @@
 
 ### Abstract
 
-![Problem function](./problem1/problemFunction.png?raw=true "Problem function")
+<img class="default_img_res" src="./problem1/problemFunction.png?raw=true"/>
 
 I defined this in the [problem_function](./modules/problem_function.py) module which I import in all my metaheuristics code.
 
@@ -58,7 +58,7 @@ The different cloths yield different amounts of profit
 
 These can be modelled into the following Linear Programming model:
 
-![Linear Programming Model](./problem2/model.png?raw=true "Linear programming model")
+<img class="default_img_res" src="./problem2/model.png?raw=true"/>
 
 The best solution I've found is
 

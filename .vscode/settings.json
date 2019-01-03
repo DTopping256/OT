@@ -1,3 +1,5 @@
 {
-  "markdown-pdf.styles": ["markdown-pdf.css"]
+  "markdown-pdf.styles": ["markdown-pdf.css"],
+  "markdown-pdf.convertOnSave": true,
+  "markdown-pdf.convertOnSaveExclude": ["README.md"]
 }
