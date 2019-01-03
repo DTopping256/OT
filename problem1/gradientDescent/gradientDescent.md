@@ -14,7 +14,7 @@ I found that the 2 minima picked up by gradient descent were at 0 and 101, 101 i
 
 ## Default gradient descent
 
-With the [default](./gradientDescent.py#l136) starting parameters, you get this:
+With the [default](./gradientDescent.py#L136) starting parameters, you get this:
 
 ![GD (against line)](./default_gd_against_line.png?raw=true "GD (against line)")
 
