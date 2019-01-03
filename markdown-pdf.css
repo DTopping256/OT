@@ -1,0 +1,11 @@
+img {
+  width: 400px;
+  height: 300px;
+  display: block;
+  margin: auto;
+}
+
+.default_img_res {
+  width: unset;
+  height: unset;
+}

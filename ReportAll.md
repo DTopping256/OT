@@ -1,24 +1,40 @@
-# Gradient Descent
+# Technical report
 
-_Source code: [notebook](./gradientDescent.ipynb) or [python script](./gradientDescent.py)_
+If this is hard to follow, use the `README.pdf` instead; as this seperates each problem and metaheuristic using links.
+
+## Problem 1
+
+### Abstract
+
+<img class="default_img_res" src="./problem1/problemFunction.png?raw=true"/>
+
+I defined this in the [problem_function](./modules/problem_function.py) module which I import in all my metaheuristics code.
+
+It plots this graph:
+
+![f(x)](./problem1/simulatedAnnealing/f.png?raw=true "f(x)")
+
+Where there is a local minimum (a very shallow one on this scale) at `x = 0` and a global minimum at `x = 101`; so the best solution is 101.
+
+I find both of these minima when testing each of the metaheuristics. I have written the code to each metaheuristic and put it into the `metaheuristics` python module.
+
+<hr />
+
+## Solving problem 1 with Gradient Descent
+
+_Source code: [notebook](./problem1/gradientDescent/gradientDescent.ipynb) or [python script](./problem1/gradientDescent/gradientDescent.py)_
 
 Gradient descent is deterministic so doesn't need to be run more than once for the same parameters, because its going to yield the same results.
 
-## Abstract
-
-I have made a generalised `gradient_descent` function in the [metaheuristics module](../../modules/metaheuristics.py) which can take in many parameters.
-
-I found that the 2 minima picked up by gradient descent were at 0 and 101, 101 is the best solution since `f(101) < f(0)`.
+I have made a generalised `gradient_descent` function in the [metaheuristics module](./modules/metaheuristics.py).
 
 ### Default gradient descent
 
-With the [default](./gradientDescent.py#L136) starting parameters, you get this:
+With the [default](./problem1/gradientDescent/gradientDescent.py#L136) starting parameters, you get this:
 
-![GD (against line)](./default_gd_against_line.png?raw=true "GD (against line)")
+![GD (against line)](./problem1/gradientDescent/default_gd_against_line.png?raw=true "GD (against line)")
 
 When the algorithm starts it uses the derivative to find the gradient and follows the slope downward, until one of the tolerances (`e_g` gradient or `e_x` difference in x) are satisfied or the maximum iterations is reached.
-
-<div class="page"/>
 
 ### Algorithm by hand (first few iterations)
 
@@ -44,11 +60,9 @@ _See the notebook, for output of all of the iterations._
 
 When testing how the starting point affects the gradient descent on this particular function it becomes apparent that gradent descent only works well from a particular set of start positions.
 
-![results_against_x0](./results_against_x0.png?raw=true "Results against start point")
+![results_against_x0](./problem1/gradientDescent/results_against_x0.png?raw=true "Results against start point")
 
 Below the value of the global minima the curve is very flat and has little gradient, so the algorithm has tiny steps and doesn't move very far (from where it starts) in the amount of iterations it has. But between 101 and 120 the algorithm consistently finds the global minimum at 101.
-
-<div class="page"/>
 
 ### Step multiplier
 
@@ -58,21 +72,19 @@ Again doing 3 tests at x0 = 80, x0 = 101 and x0 = 120; this time I varied the st
 
 #### x0 = 80
 
-![results_against_stepm_x0_80](./results_against_stepm_x0_80.png?raw=true "Results against step multiplier (starting at x = 80)")
+![results_against_stepm_x0_80](./problem1/gradientDescent/results_against_stepm_x0_80.png?raw=true "Results against step multiplier (starting at x = 80)")
 
 Here the gradient is so small that the amount taken off of x each step is negligible; so the step multiplier has little effect, and the result is approximately `x0`.
 
 #### x0 = 101
 
-![results_against_stepm_x0_101](./results_against_stepm_x0_101.png?raw=true "Results against step multiplier (starting at x = 101)")
+![results_against_stepm_x0_101](./problem1/gradientDescent/results_against_stepm_x0_101.png?raw=true "Results against step multiplier (starting at x = 101)")
 
 Here it seems that the stopcondition gets triggered immediently so the step multiplier doesn't have any effect, and the result is `x0`.
 
-<div class="page"/>
-
 #### x0 = 120
 
-![results_against_stepm_x0_120](./results_against_stepm_x0_120.png?raw=true "Results against step multiplier (starting at x = 120)")
+![results_against_stepm_x0_120](./problem1/gradientDescent/results_against_stepm_x0_120.png?raw=true "Results against step multiplier (starting at x = 120)")
 
 Here there is a steep gradient so a smaller step multiplier is preferred over a larger one (`step_m < 0.6`) otherwise gradient descent overshoots the global minimum and carries on towards the local minimum.
 
@@ -82,25 +94,21 @@ Doing tests at x0 = 80, x0 = 101 and x0 = 120; the difference tolerance was vari
 
 #### x0 = 80
 
-![results_against_ex_x0_80](./results_against_ex_x0_80.png?raw=true "Results against difference tolerance (starting at x = 80)")
+![results_against_ex_x0_80](./problem1/gradientDescent/results_against_ex_x0_80.png?raw=true "Results against difference tolerance (starting at x = 80)")
 
 Again, (with the step multiplier only being 0.1) the difference at this shallow gradient was very small so the tolerance between this range was pretty much satisfied straight away.
 
-<div class="page"/>
-
 #### x0 = 101
 
-![results_against_ex_x0_101](./results_against_ex_x0_101.png?raw=true "Results against difference tolerance (starting at x = 101)")
+![results_against_ex_x0_101](./problem1/gradientDescent/results_against_ex_x0_101.png?raw=true "Results against difference tolerance (starting at x = 101)")
 
 Similar to the last one, the difference tolerance was satisfied straight away (because of the small gradient) with the algorithm starting at a minimum.
 
 #### x0 = 120
 
-![results_against_ex_x0_120](./results_against_ex_x0_120.png?raw=true "Results against difference tolerance (starting at x = 120)")
+![results_against_ex_x0_120](./problem1/gradientDescent/results_against_ex_x0_120.png?raw=true "Results against difference tolerance (starting at x = 120)")
 
 Because this part of the curve is much more steep, we actually get some movement from the GD algorithm. The correlation favours smaller values of tolerance for getting closer to the minimum.
-
-<div class="page"/>
 
 ### Gradient tolerance (e_g)
 
@@ -110,17 +118,15 @@ The results were very similar to difference tolerance, however gradient toleranc
 
 #### x0 = 80
 
-![results_against_eg_x0_80](./results_against_eg_x0_80.png?raw=true "Results against gradient tolerance (starting at x = 80)")
+![results_against_eg_x0_80](./problem1/gradientDescent/results_against_eg_x0_80.png?raw=true "Results against gradient tolerance (starting at x = 80)")
 
 #### x0 = 101
 
-![results_against_eg_x0_101](./results_against_eg_x0_101.png?raw=true "Results against gradient tolerance (starting at x = 101)")
-
-<div class="page"/>
+![results_against_eg_x0_101](./problem1/gradientDescent/results_against_eg_x0_101.png?raw=true "Results against gradient tolerance (starting at x = 101)")
 
 #### x0 = 120
 
-![results_against_eg_x0_120](./results_against_eg_x0_120.png?raw=true "Results against gradient tolerance (starting at x = 120)")
+![results_against_eg_x0_120](./problem1/gradientDescent/results_against_eg_x0_120.png?raw=true "Results against gradient tolerance (starting at x = 120)")
 
 ### Maximum iterations
 
@@ -128,21 +134,19 @@ The maximum iterations value limits how many times the GD algorithm can run when
 
 #### x0 = 80
 
-![results_against_iterations_x0_80](./results_against_iterations_x0_80.png?raw=true "Results against max iterations (starting at x = 80)")
+![results_against_iterations_x0_80](./problem1/gradientDescent/results_against_iterations_x0_80.png?raw=true "Results against max iterations (starting at x = 80)")
 
 As the tolerances are met straight away, iterations doesn't affect the GD at this start point on the curve.
 
-<div class="page"/>
-
 #### x0 = 101
 
-![results_against_iterations_x0_101](./results_against_iterations_x0_101.png?raw=true "Results against max iterations (starting at x = 101)")
+![results_against_iterations_x0_101](./problem1/gradientDescent/results_against_iterations_x0_101.png?raw=true "Results against max iterations (starting at x = 101)")
 
 As the tolerances are met straight away, iterations doesn't affect the GD at this start point on the curve.
 
 #### x0 = 120
 
-![results_against_iterations_x0_120](./results_against_iterations_x0_120.png?raw=true "Results against max iterations (starting at x = 120)")
+![results_against_iterations_x0_120](./problem1/gradientDescent/results_against_iterations_x0_120.png?raw=true "Results against max iterations (starting at x = 120)")
 
 The larger the maximum iterations the closer the result is to finding a satisfying the tolerance stop conditions, and getting a good final result.
 
