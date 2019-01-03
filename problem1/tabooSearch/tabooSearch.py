@@ -78,7 +78,7 @@ def plot_taboo_search_metaheuristic(f, xrange, results, print_data=False):
 
 # In[4]:
 
-
+# Default starting parameters
 s0 = 120
 def stop_function(i, s, viable_neighbours, max_i):
     return (i != 0 and (max_i < i or (viable_neighbours == 0)))
@@ -146,7 +146,7 @@ for starting_point in starting_points:
     batch_plt.plot_2d_batch_accuracy("finish point (x_n)", "step size", 101, iteration_results)
 
 
-# In[12]:
+# In[13]:
 
 
 # Batch test for taboo memory
@@ -154,14 +154,8 @@ for starting_point in starting_points:
     iteration_results = []
     for memory in range(1, 5):
         result = taboo_search(f, starting_point, stop_function, memory, get_neighbourhood, False, stop_args={"max_i": max_iter}, neighbourhood_args={"step_size": step_size})
-        iteration_results.append({"x": memory, "y": len(result[0]), "z": result[1]})
+        iteration_results.append({"x": memory, "y": result[1]})
 
     print("Starting at {}".format(starting_point))
-    batch_plt.plot_3d_batch_accuracy("taboo memory", "iterations needed", "solution", 101, iteration_results)
-
-
-# In[ ]:
-
-
-
+    batch_plt.plot_2d_batch_accuracy("finish point (x_n)", "taboo memory", 101, iteration_results)
 
