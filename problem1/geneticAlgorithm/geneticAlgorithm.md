@@ -48,6 +48,7 @@ In GA's the values of a problem need to be partitioned into many units, this is 
 I first considered using binary and as I wanted to represent real numbers in my search space I tried implementing a floating point binary dna structure.
 
 ![float diagram](./float_diagram.jpg?raw=true "Float diagram")
+(Float diagram, see references)
 
 What became clear though was that the search space would be very large and that a small change in 1 bit of a float can dramatically change the value of the float; especially in the first 2 bytes of it. Also there was the problem that cross-over between floats of with different exponents would create values wildly different to the original values.
 
@@ -212,3 +213,5 @@ To further improve this GA I would make a better mutation function which would m
 ## References
 
 (Blinkie and Thiele, 1995) - Blinkie, T. and Thiele, L. (1995). A Comparison of Selection Schemes used in Genetic Algorithms. 2nd ed. [ebook] Zurich: Swiss Federal Institute of Technology, pp.14, 23, 40. Available at: https://www.tik.ee.ethz.ch/file/6c0e384dceb283cd4301339a895b72b8/TIK-Report11.pdf [Accessed 6 Dec. 2018].
+
+(Float diagram) - http://www.puntoflotante.net/FLOATING-POINT-FORMAT-IEEE-754.htm [Accessed 3 Jan. 2019]
