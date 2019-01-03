@@ -6,7 +6,7 @@ Being stochastic, GA's will create different graphs each time but they will be v
 
 ## Abstract
 
-I have made a generalised `genetic_algorithm` function in the [metaheuristics module](../../modules/metaheuristics.py) which can take in many parameters.
+I have made a generalised `genetic_algorithm` function in the [metaheuristics module](../../modules/metaheuristics.py#L139) which can take in many parameters.
 
 Throughout testing I found that the 2 minima picked up by the genetic algorithm are 0 and 101, and I have shown that 101 is the best solution out of the two; so for the rest of this I will refer to 101 as the global minimum and 0 as the local minimum. (see the conclusion)
 
