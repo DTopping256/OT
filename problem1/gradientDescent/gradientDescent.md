@@ -6,7 +6,7 @@ Gradient descent is deterministic so doesn't need to be run more than once for t
 
 ## Abstract
 
-I have made a generalised `gradient_descent` function in the [metaheuristics module](../../modules/metaheuristics.py) which can take in many parameters.
+I have made a generalised `gradient_descent` function in the [metaheuristics module](../../modules/metaheuristics.py#L8) which can take in many parameters.
 
 I found that the 2 minima picked up by gradient descent were at 0 and 101, 101 is the best solution since `f(101) < f(0)`.
 
