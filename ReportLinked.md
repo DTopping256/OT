@@ -10,7 +10,7 @@ I defined this in the [problem_function](./modules/problem_function.py) module w
 
 It plots this graph:
 
-![f(x)](./problem1/simulatedAnnealing/f.png?raw=true "f(x)")
+![f(x)](./problem1/f.png?raw=true "f(x)")
 
 Where there is a local minimum (a very shallow one on this scale) at `x = 0` and a global minimum at `x = 101`; so the best solution is 101.
 

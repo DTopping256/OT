@@ -8,9 +8,7 @@ Being stochastic, GA's will create different graphs each time but they will be v
 
 I have made a generalised `genetic_algorithm` function in the [metaheuristics module](../../modules/metaheuristics.py#L139) which can take in many parameters.
 
-Throughout testing I found that the 2 minima picked up by the genetic algorithm are 0 and 101, and I have shown that 101 is the best solution out of the two; so for the rest of this I will refer to 101 as the global minimum and 0 as the local minimum. (see the conclusion)
-
-<hr />
+Throughout testing I found that the 2 minima picked up by the genetic algorithm are 0 and 101, and I have shown that 101 is the best solution out of the two; so for the rest of this I will refer to 101 as the global minimum and 0 as the local minimum.
 
 ## Default GA
 
@@ -18,11 +16,11 @@ With the [default](./geneticAlgorithm.py#L197) starting parameters, you get some
 
 ![GA (against line)](./default_ga_results.png?raw=true "GA (against line)")
 
+<div class="page"/>
+
 ![GA (vals per gen)](./default_ga_values_per_generation.png?raw=true "GA (vals per gen)")
 
 The early generations tend to have the fittest individuals closer to the local minima at 0, because the trough is more spread out so theres a higher probability that individuals will be their when they are initially randomly generated. However, with cross-over and mutation there start to be more individuals which find the global minima at 101 and because these then become the fittest more individuals in later generations settle at the global minimum.
-
-<hr />
 
 ## The algorithm by hand (first few iterations)
 
@@ -41,13 +39,15 @@ Here are some constants which will be unchanged throughout as they are fundament
 - `fitness_function`: the problem 1 function (imported from [problem_function](../../modules/problem_function.py) module)
 - `breed_individuals`: the function ([source](./geneticAlgorithm.py#L164)) which unpacks the generation and dna from 2 individuals and first uses cross-over and then mutation on them to output a new individual with inherited dna and an incremented generation number.
 
+<div class="page"/>
+
 ### Representing the decimal values as dna
 
 In GA's the values of a problem need to be partitioned into many units, this is so that cross-over and mutation can create new values by making slight changes to this structure.
 
 I first considered using binary and as I wanted to represent real numbers in my search space I tried implementing a floating point binary dna structure.
 
-![float diagram](./float_diagram.jpg?raw=true "Float diagram")
+<img class="default_img_res" src="./float_diagram.jpg?raw=true"/>
 (Float diagram, see references)
 
 What became clear though was that the search space would be very large and that a small change in 1 bit of a float can dramatically change the value of the float; especially in the first 2 bytes of it. Also there was the problem that cross-over between floats of with different exponents would create values wildly different to the original values.
@@ -67,6 +67,8 @@ With this system I have a search space between -999.999 and 999.999 which is acc
 In a GA for it to diversify there needs to be a slight chance of a mutation in the dna.
 
 The mutation function I use has some chance (`sign_change_chance`) that the sign character will change to the other sign character, and another chance (`mutation_chance`) that is applied to each digit character that that character will change to another random character.
+
+<div class="page"/>
 
 ### Cross-over
 
@@ -99,7 +101,7 @@ For the example I'll use a population size of 6 and a cross-over amount of 2.
       - The fore-mentioned happens another 2 times to produce: `-903.900`, `-63.000` and `-974.002`
   - The next generations population is `[103.500, 23.1, 0.34, -903.900, -63.000, -974.002]` which replaces the old one.
 
-<hr />
+<div class="page"/>
 
 ## Population size
 
@@ -109,7 +111,7 @@ Through testing the GA when changing only population size I have found that larg
 
 Therefore, I decided in subsequent tests to fix my popultion size parameter at 1000 because I can be fairly sure that I'm getting a good result and increasing the population past this would only make the algorithm slower.
 
-<hr />
+<div class="page"/>
 
 ## Fitness upper-bound
 
@@ -123,19 +125,17 @@ I found that I got a high proportion of results at the global minima when the "f
 
 In subsequent tests I fixed fitness upper-bound to 0.2.
 
-<hr />
+<div class="page"/>
 
 ## Number of Epochs / Generations
 
 The number of generations of populations produced.
 
-I found that testing from 15-150 generations didn't affect the results significantly.
-
 ![results_against_epochs](./results_against_epochs.png?raw=true "Results against epochs")
 
-I fixed the number of epochs at 30 for subseqent tests.
+I found that testing from 15-150 generations didn't affect the results significantly. I fixed the number of epochs at 30 for subseqent tests.
 
-<hr />
+<div class="page"/>
 
 ## Cross-over amount
 
@@ -147,8 +147,6 @@ I found that cross-over values of 1 and 2 performed best with my dna model, but 
 
 I fixed cross-over to 1 for subsequent tests.
 
-<hr />
-
 ## Mutation chance
 
 This time I varied the chance that any digit character in the dna structure can randomly change.
@@ -159,7 +157,7 @@ I found that a balance is necessary where percentages 5% or lower tend to not be
 
 I fixed mutation chance to 0.1 (10%) following these findings.
 
-<hr />
+<div class="page"/>
 
 ## Selection method
 
@@ -177,6 +175,8 @@ After 16 generations the high density of the population shifts upto the global m
 
 ![trunc_selection_results](./trunc_ga_results_per_generation.png)
 
+<div class="page"/>
+
 ### Fitness proportionate selection
 
 After 12 generations the high density of the population shifts upto the global minimum from the local minimum.
@@ -191,7 +191,7 @@ After 5 generations the high density of the population shifts upto the global mi
 
 Thus tournament selection seems to be the best selection method since it finds the best solution in the least amount of generations.
 
-<hr />
+<div class="page"/>
 
 ## Conclusion
 
@@ -199,14 +199,24 @@ GA's although computationally expensive, don't get easily trapped in local minim
 
 To summarise, the best parameters for the GA over testing were:
 
-- A large but not excessive **population size** (around **1000** individuals)
-- I decided to truncate my population by the **fittest 20%** (200 individuals) for the next generation produced 10 children per 100 pairs of parents; to maintain population size.
-- The **number of generations** didn't need to be very large for this due to the population size and other factors so I reduced the number of epochs/generations **from 50 to 30**, as this reduced the amount of computation for the rest of the batch tests.
-- The amount of **cross over** was most consistent at **1**.
-- The chance of **mutation** didn't need to be high at all with a **chance of 10%** being about right.
-- The **selection function** quickest at zoning in the population on the global maximum was the **tournament selection** function.
+1. A large but not excessive **population size** (around **1000** individuals)
+2. I decided to truncate my population by the **fittest 20%** (200 individuals) for the next generation produced 10 children per 100 pairs of parents; to maintain population size.
+3. The **number of generations** didn't need to be very large for this due to the population size and other factors so I reduced the number of epochs/generations **from 50 to 30**, as this reduced the amount of computation for the rest of the batch tests.
+4. The amount of **cross over** was most consistent at **1**.
+5. The chance of **mutation** didn't need to be high at all with a **chance of 10%** being about right.
+6. The **selection function** quickest at zoning in the population on the global maximum was the **tournament selection** function.
 
 To further improve this GA I would make a better mutation function which would mean a less eratic change in the values encoded by the dna structure.
+
+Pros:
+
+- Finds both local minima / isn't prone to getting trapped by local minima.
+- Can intensify and diversify simultaniously with its population, since the mutated individuals will create more diverse answers but the cross over effect will create a more local shift in the values.
+
+Cons:
+
+- The most computationally intensive metaheuristic we've used.
+- Much of the population will revisit large sections of the search space which aren't worthwhile due to the randomness of the mutation, with the other methods this was a lot less of a problem and they quickly narrowed the search to a particular area of the search space.
 
 <hr />
 

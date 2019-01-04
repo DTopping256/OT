@@ -10,19 +10,17 @@ I have made a generalised `simulated_annealing` function in the [metaheuristics 
 
 Throughout testing I found that the 2 minima picked up by simulated annealing are 0 and 101, and I have shown that 101 is the best solution out of the two; so for the rest of this I will refer to 101 as the global minimum and 0 as the local minimum.
 
-<hr />
-
 ## Parameters which find the best solution
 
 With the [default](./simulatedAnnealing.py#L142) starting parameters, you get something like this:
 
 ![SA (wide)](./simulated_annealing_on_f_with_start_vars_wide.png?raw=true "SA (wide)")
 
+<div class="page"/>
+
 ![SA (close)](./simulated_annealing_on_f_with_start_vars_close.png?raw=true "SA (close)")
 
 You can see that the simulated annealing can and does often start to overshoot but with the right parameters it eventually finds the global minimum. However, this isn't the case for a lot of combinations of parameters as we will see.
-
-<hr />
 
 ## The algorithm by hand (first few iterations)
 
@@ -39,6 +37,8 @@ Starting with the [default](./simulatedAnnealing.py#L142) parameters:
 - `max_epoch`: 50
 
 _Further descriptions of what the parameters mean and how they are used in the algorithm can be found in the [source code](./simulatedAnnealing.py#L29)._
+
+<div class="page"/>
 
 ### Algorithm workings
 
@@ -105,19 +105,17 @@ _Over time the epochs will tend to choose decreasing values, minimising the diff
 
 See the notebook for a real log of the whole algorithm.
 
-<hr />
-
 ## Changing the starting point (s_0)
 
 For this independant variable I tested a range of starting points from -5 to 120.
 
 ![SA](./variable_starting_point_scatter.png?raw=true "result scatter")
 
+<div class="page"/>
+
 ![SA](./variable_starting_point_scatter_sds.png?raw=true "standard deviation scatter")
 
 Values of 90 < x < 200 are a good start point for the model (with these other starting settings); however with a starting point of x < 90 the model does tend to fall towards the local minimum at x = 0, and with a start x > 200 the start point is too far from the solution with these parameters.
-
-<hr />
 
 ## Adjusting temperature variables (t_0 & the cooling function)
 
@@ -127,6 +125,8 @@ For this my independant variables were:
 
 - The starting temperature, tested with 50 values from 1 to 981
 - The gradient of the "linear" cooling function `c(x) -> gx` (where g is the temperature gradient), testing with 50 values from 1/52 to 50/52 (~0.02 to ~0.96)
+
+<div class="page"/>
 
 ### s_0 = 80
 
@@ -158,6 +158,8 @@ The above uses the same data but the z-axis is standard deviation from 101, to g
 
 The above uses the same data but the z-axis is standard deviation from 101, to get some measure for accuracy of the test to the global minimum.
 
+<div class="page"/>
+
 ### s_0 = 120
 
 ![SA](./s0_120_temperature_scatter.png?raw=true "result scatter s_0 = 120")
@@ -173,7 +175,7 @@ The above uses the same data but the z-axis is standard deviation from 101, to g
 
 The above uses the same data but the z-axis is standard deviation from 120, to get some measure for accuracy of the test to the global minimum.
 
-<hr />
+<div class="page"/>
 
 ## Neighbourhood function
 
@@ -233,7 +235,7 @@ Observations:
 - Neighbourhood values of 2 with a smaller step perform best and steps closer to 0.1 with small neighbourhoods perform best. Otherwise results tend to jump out of the global minima and end up at the local minima.
 - Large step size and large numbers of neighbourhood pairs again created outliers which didn't find any minima.
 
-<hr />
+<div class="page"/>
 
 ## Stop condition
 
@@ -245,20 +247,19 @@ We will now experiment with various stop condition functions when batch tested o
 - Stop when the `x` difference is less than 0.1 (step size) after an iteration of epochs
 - Stop when the solution `f(x)` difference is less than 0.1
 
-<hr />
-
 ## Conclusion
 
-The two minima found by the algorithm (when the parameters are abjusted) were x = 0 and x = 101.
-
-We can simply do f(0) and f(101) to determine the best.
-
-- f(0) = -1
-- f(101) = ~ -1.37
-
-So x = 101 is the best solution out of the minima found from these tests.
-
 The success of this algorithm in terms of success (at reaching a good solution) is quite consistent when the right parameters are chosen, however as what these are change depending upon the problem function, the accuracy of the method is not constant. I'd say the efficiency of this algorithm can be quite efficient again when favourable parameters are chosen, but it can take a large amount of iterations and epochs to get to a good solution (or it might not get to a good solution in time) when bad parameters are chosen.
+
+Pros:
+
+- Has the potential to find the global maximum from any starting position with the right parameters, since it is stocastic.
+- Can be tuned to be more or less intensifying at different points and rates.
+
+Cons:
+
+- Since it is stocastic can overshoot minima, go the wrong direction and do other unfavourable behavour due to random chance. However, on average it will (with the right parameters) go in a favourable direction.
+- Is quite computationally intensive, taking many iterations and using quite a complex model to optimise a function.
 
 <hr />
 
