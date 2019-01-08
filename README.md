@@ -58,7 +58,7 @@ These can be modelled into the following Linear Programming model:
 
 ![Linear Programming Model](./problem2/model.png?raw=true "Linear programming model")
 
-The best solution I've found is
+The best solution I've found is A = 0.3, B = 2.9, C = 1.1, D = 0.1.
 
 ### Solving the problem
 
