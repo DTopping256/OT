@@ -6,7 +6,6 @@
 
 import random
 import math
-import numpy as np
 import sys
 
 # Allows me to import my modules
@@ -252,6 +251,18 @@ for e in range(5, 31):
 
 
 batch_plt.plot_3d_batch_accuracy("step size", "epochs", "profit: f(s_n)", False, step_epoch_results)
+
+
+# In[27]:
+
+
+DEFAULTS.max_epoch = 15
+DEFAULTS.step_size = 0.05
+
+results = simulated_annealing(f, DEFAULTS, print_workings=True)
+print("\nStats:\n", results[1])
+print_all_constraints(results[1], constraints)
+print("Profit: ", f(results[1]))
 
 
 # In[ ]:
