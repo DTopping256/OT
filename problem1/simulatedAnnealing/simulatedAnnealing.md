@@ -10,7 +10,7 @@ I have made a generalised `simulated_annealing` function in the [metaheuristics 
 
 Throughout testing I found that the 2 minima picked up by simulated annealing are 0 and 101, and I have shown that 101 is the best solution out of the two; so for the rest of this I will refer to 101 as the global minimum and 0 as the local minimum.
 
-## Parameters which find the best solution
+## Simulated annealing with default starting parameters
 
 With the [default](./simulatedAnnealing.py#L142) starting parameters, you get something like this:
 

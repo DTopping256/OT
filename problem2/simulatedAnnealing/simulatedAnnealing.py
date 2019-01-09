@@ -37,8 +37,9 @@ class SA_defaults:
         self.max_epoch = max_epoch
         self.tolerance = tolerance
 
-def simulated_annealing(f, DEFAULTS, is_maximisation=False, s_0=None, t_0=None, neighbourhood_func=None, step_size=None, temp_reduc_func=None, acc_prob_func=None, stop_cond=None, max_i=None, max_epoch=None, tolerance=None, print_workings=False):
+def simulated_annealing(f, DEFAULTS, is_maximisation=None, s_0=None, t_0=None, neighbourhood_func=None, step_size=None, temp_reduc_func=None, acc_prob_func=None, stop_cond=None, max_i=None, max_epoch=None, tolerance=None, print_workings=False):
     # Default parameters
+    is_maximisation = DEFAULTS.is_maximisation if is_maximisation is None else is_maximisation
     s_0 = DEFAULTS.s_0 if s_0 is None else s_0
     t_0 = DEFAULTS.t_0 if t_0 is None else t_0
     neighbourhood_func = DEFAULTS.neighbourhood_func if neighbourhood_func is None else neighbourhood_func
@@ -86,7 +87,7 @@ def simulated_annealing(f, DEFAULTS, is_maximisation=False, s_0=None, t_0=None, 
                 solution = {k: v for k, v in possible_solution.items()}
                 accepted = True
             if (print_workings == True):
-                print("Epoch: {}\ts: {}    \tt: {}\tAccepted: {}\tDiff: {}".format(epoch, {k: round(v, 3) for k, v in possible_solution.items()}, temperature, accepted, round(solution_eval_diff, 3)))
+                print("Epoch: {}\ts: {}    \tt: {}\tAccepted: {}\tDiff: {}".format(epoch, {k: round(v, 3) for k, v in possible_solution.items()}, round(temperature, 3), accepted, round(solution_eval_diff, 3)))
         # Reduce the temperature and increment the iteration counter
         temperature = temp_reduc_func(temperature)
         iteration_counter += 1
@@ -98,7 +99,7 @@ def simulated_annealing(f, DEFAULTS, is_maximisation=False, s_0=None, t_0=None, 
 # In[4]:
 
 
-s_0 = {"x1": 1, "x2": 1, "x3": 1, "x4": 1}
+s_0 = {"x1": 0, "x2": 0, "x3": 0, "x4": 0}
 t_0 = 5.0
 step_size = 0.1
 max_i = 50
@@ -132,21 +133,21 @@ def stop_cond(iteration_counter=None, max_i=None, solution=None, prev_solution=N
 DEFAULTS = SA_defaults(True, s_0, t_0, neighbourhood_func, step_size, temp_reduc_func, acc_prob_func, stop_cond, max_i, max_epoch, tolerance)
 
 
-# In[64]:
+# In[5]:
 
 
 results = simulated_annealing(f, DEFAULTS, print_workings=True)
 results[1]
 
 
-# In[65]:
+# In[6]:
 
 
 print_all_constraints(results[1], constraints)
 print("Profit: ", f(results[1]))
 
 
-# In[5]:
+# In[7]:
 
 
 # Imports my plotting module
@@ -156,7 +157,7 @@ import batch_plotting as batch_plt
 from utilities import n_dim_spiral
 
 
-# In[45]:
+# In[8]:
 
 
 # Batch testing start position
@@ -171,40 +172,64 @@ for i in range(20):
         starting_point_results.append({"x": j, "y": f(result[1]) if result[1] is not False else False})
 
 
-# In[46]:
+# In[9]:
 
 
 batch_plt.plot_2d_batch_accuracy("profit: f(s_n)", "starting point: s_0", False, starting_point_results)
 
 
-# In[51]:
+# In[10]:
 
 
-starting_point_results[4350:4400]
+# Extract the results above 16 profit
+
+best_sprs = [(i, list(filter(lambda e: e["y"] > 16, starting_point_results[i*1000: (i+1)*1000]))) for i in range(20)]
+best_sprs = list(filter(lambda e: len(e[1]) > 0, best_sprs))
+best_sprs
 
 
-# In[57]:
+# In[11]:
 
 
-spiral[368]
+best_start_sprs = []
+for t in best_sprs:
+    for ele in t[1]:
+        keys = ["x1", "x2", "x3", "x4"]
+        x = ele["x"]
+        y = ele["y"]
+        start_cx = spiral[x]
+        end_cx = end_point[x+t[0]*1000]
+        if end_cx is not False:
+            best_start_sprs.append(start_cx)
+            print("{} {} | {} | {}".format(x, [round(start_cx[key],3) for key in keys], [round(end_cx[key],3) for key in keys], round(y, 3)))
 
 
-# In[54]:
+# In[12]:
 
 
-end_point[4372]
+# Finding the average best start point indicated by the batch test
+avg = {"x1": 0, "x2": 0, "x3": 0, "x4": 0}
+dims = 4
+for i in best_start_sprs:
+    for k, v in i.items():
+        avg[k] += v
+for k, v in avg.items():
+    avg[k] = round(avg[k]/len(best_start_sprs), 3)
+print("Best starting point on average: ", avg, "\n (will vary each time batch test run)")
 
 
-# In[55]:
+# In[13]:
 
 
+# Testing certain 'end_points'
 print_all_constraints(end_point[4372], constraints)
 print("Profit: ", f(end_point[4372]))
 
 
-# In[20]:
+# In[14]:
 
 
+# Set my start point to (0.7, 0.7, 0.7, 0.7) which was the best the first time I ran the starting point batch test
 DEFAULTS.s_0 = {"x1": 0.7, "x2": 0.7, "x3": 0.7, "x4": 0.7}
 
 # Batch testing starting temperature and temperature function
@@ -215,58 +240,53 @@ for g in range(40):
     grad = (1+g)/41
     linear_temp_func = lambda x: x*grad
     for t in range(30):
-        start_temp = t+1
+        start_temp = (t+1)*0.2
         for i in range(10):
             result = simulated_annealing(f, DEFAULTS, t_0=start_temp, temp_reduc_func=linear_temp_func)
             end_point.append(result[1])
             temp_results.append({"x": grad, "y": start_temp, "z": f(result[1]) if result[1] is not False else False})
 
 
-# In[21]:
+# In[15]:
 
 
 batch_plt.plot_3d_batch_accuracy("temperature gradient", "start temperature: t_0", "profit: f(s_n)", False, temp_results)
 
 
-# In[24]:
+# In[16]:
 
 
-DEFAULTS.t_0 = 15
+DEFAULTS.t_0 = 2
 DEFAULTS.temp_reduc_func = lambda x: 0.9*x
 
 # Batch testing step_size and max_epoch
 step_epoch_results = []
 end_point= []
 
-for e in range(5, 31):
+for ep in range(5, 31):
     for s in range(30):
         step_size = (s+1)/40
         for i in range(10):
-            result = simulated_annealing(f, DEFAULTS, max_epoch=e, step_size=step_size)
+            result = simulated_annealing(f, DEFAULTS, max_epoch=ep, step_size=step_size)
             end_point.append(result[1])
-            step_epoch_results.append({"x": step_size, "y": e, "z": f(result[1]) if result[1] is not False else False})
+            step_epoch_results.append({"x": step_size, "y": ep, "z": f(result[1]) if result[1] is not False else False})
 
 
-# In[25]:
+# In[17]:
 
 
 batch_plt.plot_3d_batch_accuracy("step size", "epochs", "profit: f(s_n)", False, step_epoch_results)
 
 
-# In[27]:
+# In[18]:
 
 
-DEFAULTS.max_epoch = 15
-DEFAULTS.step_size = 0.05
+DEFAULTS.max_epoch = 10
+DEFAULTS.step_size = 0.1
 
+# Run through with improved parameters
 results = simulated_annealing(f, DEFAULTS, print_workings=True)
-print("\nStats:\n", results[1])
+print("\nStats:")
 print_all_constraints(results[1], constraints)
-print("Profit: ", f(results[1]))
-
-
-# In[ ]:
-
-
-
+print("\nProfit: {}\nSolution: {}".format(f(results[1]), [round(results[1][key], 3) for key in ["x1", "x2", "x3", "x4"]]))
 
