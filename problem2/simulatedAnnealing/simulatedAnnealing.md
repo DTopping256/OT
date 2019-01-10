@@ -2,7 +2,7 @@
 
 _Source code: [notebook](./simulatedAnnealing.ipynb) or [python script](./simulatedAnnealing.py)_
 
-Being stochastic, SA will create different graphs each time but they will be very similar with the same settings.
+Being stochastic, SA will create different results each time but they will be very similar with the same settings.
 
 ## Abstract
 
@@ -212,4 +212,5 @@ Pros:
 
 Cons:
 
+- Generally very inaccurate.
 - With small differences acts very randomly.

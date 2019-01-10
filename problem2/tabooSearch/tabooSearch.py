@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
+# In[1]:
 
 
 import math
@@ -15,7 +15,7 @@ sys.path.extend(["../../modules", "../"])
 from problem import f, constraints, check_all_constraints, print_all_constraints
 
 
-# In[48]:
+# In[2]:
 
 
 ###### Taboo search stuff
@@ -81,7 +81,7 @@ def taboo_search(f, is_maximisation, constraints, DEFAULTS, s_0 = None, stopping
     return (history, s)
 
 
-# In[8]:
+# In[3]:
 
 
 s_0 = {"x1": 0, "x2": 0, "x3": 0, "x4": 0}
@@ -108,20 +108,20 @@ neighbourhood_args = {"step_size": 0.1}
 DEFAULTS = TS_defaults(s_0 = s_0, stopping_cond = stopping_cond, stop_args = stopping_args, taboo_memory = taboo_memory, neighbourhood_func = neighbourhood_func, neighbourhood_args = neighbourhood_args)
 
 
-# In[32]:
+# In[4]:
 
 
 results = taboo_search(f, True, constraints, DEFAULTS, print_workings=True)
 
 
-# In[33]:
+# In[5]:
 
 
 print_all_constraints(results[1], constraints)
 print("Profit: ", f(results[1]))
 
 
-# In[34]:
+# In[6]:
 
 
 # Imports my plotting module
@@ -131,7 +131,7 @@ import batch_plotting as batch_plt
 from utilities import n_dim_spiral
 
 
-# In[54]:
+# In[7]:
 
 
 # Batch testing start position
@@ -140,24 +140,24 @@ end_point = []
 spiral = n_dim_spiral({"x1": 0, "x2": 0, "x3": 0, "x4": 0}, 1000, 0.1)
 for j in range(len(spiral)):
     ps = spiral[j]
-    result = taboo_search(f, True, constraints, DEFAULTS, s_0 = ps, stop_args={"max_i": 300})
+    result = taboo_search(f, True, constraints, DEFAULTS, s_0 = ps)
     end_point.append(result[1])
     starting_point_results.append({"x": j, "y": f(result[1]) if result[1] is not False else False})
 
 
-# In[55]:
+# In[8]:
 
 
 batch_plt.plot_2d_batch_accuracy("profit: f(s_n)", "starting point: s_0", False, starting_point_results)
 
 
-# In[56]:
+# In[13]:
 
 
-end_point[900:1000]
+end_point[0:10]
 
 
-# In[57]:
+# In[10]:
 
 
 print_all_constraints({'x1': 1.0999999999999999,
@@ -166,28 +166,29 @@ print_all_constraints({'x1': 1.0999999999999999,
   'x4': 1.0999999999999999}, constraints)
 
 
-# In[61]:
+# In[18]:
 
 
 step_size_results = []
 end_point = []
 
 # Batch testing step size
-for s in range(50):
-    step_size = (s+1)/50
-    results = taboo_search(f, True, constraints, DEFAULTS, neighbourhood_args={"step_size": step_size})
+for s in range(20):
+    step_size = (s+1)/20
+    result = taboo_search(f, True, constraints, DEFAULTS, neighbourhood_args={"step_size": step_size})
     end_point.append(result[1])
     step_size_results.append({"x": step_size, "y": f(result[1]) if result[1] is not False else False})
 
 
-# In[62]:
+# In[19]:
 
 
 batch_plt.plot_2d_batch_accuracy("profit: f(s_n)", "step size", False, step_size_results)
 
 
-# In[ ]:
+# In[24]:
 
 
-
+print_all_constraints(end_point[0], constraints)
+print("Profit: ", f(end_point[0]))
 

@@ -12,9 +12,15 @@ It plots this graph:
 
 ![f(x)](./problem1/f.png?raw=true "f(x)")
 
+### Best solution (found)
+
 Where there is a local minimum (a very shallow one on this scale) at `x = 0` and a global minimum at `x = 101`; so the best solution is 101.
 
 I find both of these minima when testing each of the metaheuristics. I have written the code to each metaheuristic and put it into the `metaheuristics` python module.
+
+### Best metaheuristic
+
+**Genetic algorithms** seem best suited to solving this problem as they find both minima to a high degree of accuracy and it doesn't take much computational power for this problem.
 
 <div class="page"/>
 
@@ -54,17 +60,19 @@ The different cloths yield different amounts of profit
 | C     | 4      |
 | D     | 1      |
 
-<div class="page"/>
-
 These can be modelled into the following Linear Programming model:
 
-<img class="default_img_res" src="./problem2/model.png?raw=true"/>
+![Linear Programming Model](./problem2/model.png?raw=true "Linear programming model")
 
-The best solution I've found is
+### Best solution (found)
 
-### Solving the problem
+The best solution I've found during testing has been **A = 0.0, B = 4.5, C = 0.75 & D = 0.0** for a profit of **25.5**. This is also the solution which I found by running simplex on the problem ([see notebook](./problem2/simplex.ipynb)).
 
-The metaheuristics used were the following:
+Only Taboo Search and Genetic Algorithms found this answer out of the metaheuristics I used.
+
+### Best metaheuristic
+
+**Taboo search** consistently finds the best solution (with the right parameters) with very little computational power needed. The next best was GA but this required high computation and it wasn't 100% accurate.
 
 #### [Gradient Descent](./problem2/gradientDescent/gradientDescent.pdf)
 

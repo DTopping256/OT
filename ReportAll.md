@@ -14,9 +14,15 @@ It plots this graph:
 
 ![f(x)](./problem1/f.png?raw=true "f(x)")
 
+### Best solution (found)
+
 Where there is a local minimum (a very shallow one on this scale) at `x = 0` and a global minimum at `x = 101`; so the best solution is 101.
 
 I find both of these minima when testing each of the metaheuristics. I have written the code to each metaheuristic and put it into the `metaheuristics` python module.
+
+### Best metaheuristic
+
+**Genetic algorithms** seem best suited to solving this problem as they find both minima to a high degree of accuracy and it doesn't take much computational power for this problem.
 
 <hr />
 
@@ -171,7 +177,7 @@ Cons:
 
 _Source code: [notebook](./problem1/simulatedAnnealing/simulatedAnnealing.ipynb) or [python script](./problem1/simulatedAnnealing/simulatedAnnealing.py)_
 
-Being stochastic, SA will create different graphs each time but they will be very similar with the same settings.
+Being stochastic, SA will create different results each time but they will be very similar with the same settings.
 
 I have made a generalised `simulated_annealing` function in the [metaheuristics module](./modules/metaheuristics.py#L53).
 
@@ -545,7 +551,7 @@ Cons:
 
 _Source code: [notebook](./problem1/geneticAlgorithm/geneticAlgorithm.ipynb) or [python script](./problem1/geneticAlgorithm/geneticAlgorithm.py)_
 
-Being stochastic, GA's will create different graphs each time but they will be very similar with the same settings.
+Being stochastic, GA's will create different results each time but they will be very similar with the same settings.
 
 I have made a generalised `genetic_algorithm` function in the [metaheuristics module](./modules/metaheuristics.py#L139).
 
@@ -736,6 +742,562 @@ Cons:
 
 - The most computationally intensive metaheuristic we've used.
 - Much of the population will revisit large sections of the search space which aren't worthwhile due to the randomness of the mutation, with the other methods this was a lot less of a problem and they quickly narrowed the search to a particular area of the search space.
+
+<hr />
+
+## Problem 2
+
+### Summary
+
+In a cloth factory there are 4 types of cloth to produce (A, B, C and D), producing a type of cloth requires a combination of different amounts of coloured wool and there is a finite amount of each wool.
+
+| Wool colour | A   | B   | C   | D   | Wool available |
+| ----------- | --- | --- | --- | --- | -------------- |
+| Green       | 1   | 2   | 1   | 1   | 10             |
+| Red         | 2   | 1   | 2   | 1   | 6              |
+| Blue        | 3   | 1   | 0   | 0   | 10             |
+| Yellow      | 1   | 4   | 0   | 0   | 18             |
+| Brown       | 0   | 0   | 1   | 3   | 8              |
+| Purple      | 0   | 0   | 3   | 3   | 12             |
+
+The different cloths yield different amounts of profit
+
+| Cloth | Profit |
+| ----- | ------ |
+| A     | 3      |
+| B     | 5      |
+| C     | 4      |
+| D     | 1      |
+
+These can be modelled into the following Linear Programming model:
+
+<img class="default_img_res" src="./problem2/model.png?raw=true"/>
+
+### Best solution (found)
+
+The best solution I've found during testing has been **A = 0.0, B = 4.5, C = 0.75 & D = 0.0** for a profit of **25.5**. This is also the solution which I found by running simplex on the problem ([see notebook](./problem2/simplex.ipynb)).
+
+Only Taboo Search and Genetic Algorithms found this answer out of the metaheuristics I used.
+
+### Best metaheuristic
+
+**Taboo search** consistently finds the best solution (with the right parameters) with very little computational power needed. The next best was GA but this required high computation and it wasn't 100% accurate.
+
+<hr />
+
+## Solving problem 2 with Gradient Descent
+
+_Source code: [notebook](./gradientDescent/gradientDescent.ipynb) or [python script](./gradientDescent/gradientDescent.py)_
+
+Gradient descent is deterministic so doesn't need to be run more than once for the same parameters, because its going to yield the same results.
+
+### Abstract
+
+The best solution I've found from GD has been A = 1.2, B = 2.0, C = 1.6, D = 0.4 making a profit of 15.3. This is the solution of the algorithm from a starting position of (0, 0, 0, 0).
+
+#### Default gradient descent
+
+With the [default](./gradientDescent/gradientDescent.py#L106) starting parameters, you get something like this:
+
+```
+----------------------------------------------------------------------------------
+Iteration             X                         g	        diff
+Start (0)             (0, 0, 0, 0)	        (3, 5, 4, 1)	N/A
+1		      (0.3, 0.5, 0.4, 0.1)	(3, 5, 4, 1)	0.714
+2		      (0.6, 1.0, 0.8, 0.2)	(3, 5, 4, 1)	0.714
+3		      (0.9, 1.5, 1.2, 0.3)	(3, 5, 4, 1)	0.714
+4		      (1.2, 2.0, 1.6, 0.4)	(3, 5, 4, 1)	0.714
+
+x1 not -ve constraint: 0 <= 0.9
+x2 not -ve constraint: 0 <= 1.5
+x3 not -ve constraint: 0 <= 1.2
+x4 not -ve constraint: 0 <= 0.3
+green constraint: 5.4 <= 10
+red constraint: 6.0 <= 6
+blue constraint: 4.2 <= 10
+yellow constraint: 6.9 <= 18
+brown constraint: 2.1 <= 8
+purple constraint: 4.5 <= 12
+Profit:  15.3
+```
+
+Gradient descent on a linear multivariable function gives you partial derivatives which are constants. So you don't have a decreasing step size and you don't have the stop condition being satisfied until either a constraint is being hit or the maximum iterations has been reached; not from a gradient or difference tolerance being reached.
+
+### Changing starting point
+
+For this independant variable I tested a range of starting points in a spiral shape from (0, 0, 0, 0) outwards over 1000 points.
+
+When it gave answers which were infeasible, because the algorithm started outside the feasible region, the profit was set to 0.
+
+![GD](./problem2/gradientDescent/profit_with_starting_point.png?raw=true "Profit against starting point.")
+
+The best starting position is (0, 0, 0, 0)
+
+### Changing step multiplier
+
+I tested 100 step_m values from 0.01 to 1.0.
+
+Again, infeasible answers were set to 0.
+
+![GD](./problem2/gradientDescent/profit_with_step_m.png?raw=true "Profit against step multipliers.")
+
+0.01, 0.02, 0.03, 0.05, 0.06, 0.1, 0.15 and 0.3 give you the profit of 15.3. The rest get you lower profits from the end of the feasible region being undershot.
+
+### Conclusion
+
+Because of the linear nature of the profit line, the constant gradient in the gradient descent algorithm removes a large amount of the effectivness of this algorithm.
+
+It just goes in one direction until the constraints are hit and the algorithm has no way of following the edge of this feasible region until it finds a path further up the profit function.
+
+<hr />
+
+## Solving problem 2 with Simulated Annealing
+
+_Source code: [notebook](./problem2/simulatedAnnealing/simulatedAnnealing.ipynb) or [python script](./problem2/simulatedAnnealing/simulatedAnnealing.py)_
+
+Being stochastic, SA will create different results each time but they will be very similar with the same settings.
+
+### Abstract
+
+The best solution I've found from running SA has been:
+A = 0.3, B = 2.9, C = 1.1, D = 0.1 making a profit of 19.9; when I was testing starting position and looked into the highest profit value.
+
+### Simulated annealing with default starting parameters
+
+With the [default](./problem2/simulatedAnnealing/simulatedAnnealing.py#L102) starting parameters, you get something like this:
+
+```
+----------------------------------------------------------------------------------
+s_0: {'x3': 0, 'x4': 0, 'x1': 0, 'x2': 0}
+
+Epoch: 1  s: {'x3': -0.1, 'x4': 0, 'x1': 0, 'x2': 0}        t: 5.0  Accepted: True  Diff: -0.4
+Epoch: 2  s: {'x3': -0.1, 'x4': 0.1, 'x1': 0, 'x2': 0}      t: 5.0  Accepted: True  Diff: 0.1
+Epoch: 3  s: {'x3': -0.1, 'x4': 0.1, 'x1': -0.1, 'x2': 0}   t: 5.0  Accepted: True  Diff: -0.3
+Epoch: 4  s: {'x3': 0.0, 'x4': 0.1, 'x1': -0.1, 'x2': 0}    t: 5.0  Accepted: True  Diff: 0.4
+Epoch: 5  s: {'x3': 0.0, 'x4': 0.0, 'x1': -0.1, 'x2': 0}    t: 5.0  Accepted: True  Diff: -0.1
+Epoch: 6  s: {'x3': 0.1, 'x4': 0.0, 'x1': -0.1, 'x2': 0}    t: 5.0  Accepted: True  Diff: 0.4
+Epoch: 7  s: {'x3': 0.1, 'x4': 0.0, 'x1': -0.2, 'x2': 0}    t: 5.0  Accepted: True  Diff: -0.3
+Epoch: 8  s: {'x3': 0.1, 'x4': 0.1, 'x1': -0.2, 'x2': 0}    t: 5.0  Accepted: True  Diff: 0.1
+(x1 not -ve constraint fails)
+
+{'x1': 0, 'x2': 0, 'x3': 0, 'x4': 0}
+```
+
+Simulated annealing in this problem is a lot more prone to random walk (we can see this by the rate of "Accepted" answers which have a negative difference). This is because the difference of a step are so low (±0.5 at most), however the step size cannot be increased too much since the search space is quite small.
+
+### Changing the starting point
+
+For this independant variable I tested a range of starting points in a spiral shape from (0, 0, 0, 0) outwards over 1000 points. Each point was repeated 20 times (as the algorithm is stochastic) to get a general idea of consistency.
+
+When it gave answers which were infeasible, because the algorithm started outside the feasible region, the profit was set to 0.
+
+![SA](./problem2/simulatedAnnealing/profit_against_starting_point.png?raw=true "Profit against starting point.")
+
+Good starting points (with profit above 16) included:
+
+| Starting point           | End point            | Profit |
+| ------------------------ | -------------------- | ------ |
+| 754 (1.0, 1.0, 1.0, 0.4) | (0.5, 1.7, 0.8, 0.0) | 17.2   |
+| 270 (0.6, 0.0, 0.6, 0.6) | (0.7, 0.3, 0.1, 0.4) | 16.3   |
+| 269 (0.6, 0.1, 0.6, 0.6) | (0.6, 0.6, 0.2, 0.1) | 17.4   |
+
+Average starting point: (0.733, 0.367, 0.733, 0.533)
+
+Decided to round upto (0.7, 0.7, 0.7, 0.7) for future tests.
+
+### Changing starting temperature and temperature change
+
+I tested 40 different gradients from 1/41 to 1 and I tested for each of those 30 starting temperatures from 0.2 to 6.
+
+Each combination was repeated 10 times so that an overall trend could be observed.
+
+![SA Temperature params 1](./problem2/simulatedAnnealing/profit_against_temp_params.png?raw=true "Profit against temperature params.")
+
+![SA Temperature params 2](./problem2/simulatedAnnealing/profit_against_temp_grad.png?raw=true "Profit against temperature params.")
+
+![SA Temperature params 3](./problem2/simulatedAnnealing/profit_against_start_temp.png?raw=true "Profit against temperature params.")
+
+From the data, we can see that:
+
+- Average profit was around 12.
+- There was a much wider range of results as the temperature gradient increased.
+- Start temperatures of less than 1 were the most consistent, however this is not where you tend find the best results.
+
+I decided to use a high temperature gradient of 0.9 and a low starting temperature of 2, so that I had a slower increase of intensification from an already intenisfied starting temperature.
+
+### Amount of epochs and step size
+
+I decided to test the amount of epochs and step size together because per iteration these both contribute to the overall difference in profit because of the amount of movement of the solution.
+
+I tested epoch amounts from 5 to 30 and for each of these tested step sizes from 1/40 to 3/4 (in increments of 1/40).
+
+I repeated each combination 10 times.
+
+![SA Temperature params 1](./problem2/simulatedAnnealing/profit_against_step_epoch_params.png?raw=true "Profit against temperature params.")
+
+![SA Temperature params 2](./problem2/simulatedAnnealing/profit_against_epochs.png?raw=true "Profit against temperature params.")
+
+![SA Temperature params 3](./problem2/simulatedAnnealing/profit_against_step_size.png?raw=true "Profit against temperature params.")
+
+I have found that the most consistently good results have been found where there is low epochs per iteration and a small step size.
+
+I fixed epochs to 10 and step size to 0.1.
+
+### Final run with improved parameters
+
+```
+----------------------------------------------------------------------------------
+s_0: {'x4': 0.7, 'x2': 0.7, 'x3': 0.7, 'x1': 0.7}
+Epoch: 1	s: {'x4': 0.7, 'x2': 0.7, 'x1': 0.6, 'x3': 0.7}    	t: 2	Accepted: True	Diff: -0.3
+Epoch: 2	s: {'x4': 0.7, 'x2': 0.7, 'x1': 0.6, 'x3': 0.8}    	t: 2	Accepted: True	Diff: 0.4
+Epoch: 3	s: {'x4': 0.7, 'x2': 0.6, 'x1': 0.6, 'x3': 0.8}    	t: 2	Accepted: True	Diff: -0.5
+Epoch: 4	s: {'x4': 0.7, 'x2': 0.5, 'x1': 0.6, 'x3': 0.8}    	t: 2	Accepted: True	Diff: -0.5
+Epoch: 5	s: {'x4': 0.8, 'x2': 0.5, 'x1': 0.6, 'x3': 0.8}    	t: 2	Accepted: True	Diff: 0.1
+Epoch: 6	s: {'x4': 0.8, 'x2': 0.4, 'x1': 0.6, 'x3': 0.8}    	t: 2	Accepted: False	Diff: -0.5
+Epoch: 7	s: {'x4': 0.8, 'x2': 0.4, 'x1': 0.6, 'x3': 0.8}    	t: 2	Accepted: True	Diff: -0.5
+Epoch: 8	s: {'x4': 0.9, 'x2': 0.4, 'x1': 0.6, 'x3': 0.8}    	t: 2	Accepted: True	Diff: 0.1
+Epoch: 9	s: {'x4': 0.9, 'x2': 0.4, 'x1': 0.5, 'x3': 0.8}    	t: 2	Accepted: True	Diff: -0.3
+Epoch: 10	s: {'x4': 0.9, 'x2': 0.4, 'x1': 0.5, 'x3': 0.9}    	t: 2	Accepted: True	Diff: 0.4
+----------------------------------------------------------------------------------
+s_1: {'x4': 0.9, 'x2': 0.4, 'x3': 0.9, 'x1': 0.5}
+Epoch: 1	s: {'x4': 0.9, 'x2': 0.5, 'x1': 0.5, 'x3': 0.9}    	t: 1.8	Accepted: True	Diff: 0.5
+Epoch: 2	s: {'x4': 0.9, 'x2': 0.5, 'x1': 0.5, 'x3': 0.8}    	t: 1.8	Accepted: True	Diff: -0.4
+Epoch: 3	s: {'x4': 0.9, 'x2': 0.5, 'x1': 0.6, 'x3': 0.8}    	t: 1.8	Accepted: True	Diff: 0.3
+Epoch: 4	s: {'x4': 0.9, 'x2': 0.4, 'x1': 0.6, 'x3': 0.8}    	t: 1.8	Accepted: True	Diff: -0.5
+Epoch: 5	s: {'x4': 1.0, 'x2': 0.4, 'x1': 0.6, 'x3': 0.8}    	t: 1.8	Accepted: True	Diff: 0.1
+Epoch: 6	s: {'x4': 1.0, 'x2': 0.5, 'x1': 0.6, 'x3': 0.8}    	t: 1.8	Accepted: True	Diff: 0.5
+Epoch: 7	s: {'x4': 1.0, 'x2': 0.5, 'x1': 0.5, 'x3': 0.8}    	t: 1.8	Accepted: True	Diff: -0.3
+Epoch: 8	s: {'x4': 1.0, 'x2': 0.5, 'x1': 0.5, 'x3': 0.9}    	t: 1.8	Accepted: True	Diff: 0.4
+Epoch: 9	s: {'x4': 1.1, 'x2': 0.5, 'x1': 0.5, 'x3': 0.9}    	t: 1.8	Accepted: True	Diff: 0.1
+Epoch: 10	s: {'x4': 1.1, 'x2': 0.6, 'x1': 0.5, 'x3': 0.9}    	t: 1.8	Accepted: True	Diff: 0.5
+----------------------------------------------------------------------------------
+s_2: {'x4': 1.1, 'x2': 0.6, 'x3': 0.9, 'x1': 0.5}
+Epoch: 1	s: {'x4': 1.1, 'x2': 0.6, 'x1': 0.4, 'x3': 0.9}    	t: 1.62	Accepted: False	Diff: -0.3
+Epoch: 2	s: {'x4': 1.1, 'x2': 0.5, 'x1': 0.5, 'x3': 0.9}    	t: 1.62	Accepted: False	Diff: -0.5
+Epoch: 3	s: {'x4': 1.1, 'x2': 0.6, 'x1': 0.5, 'x3': 0.8}    	t: 1.62	Accepted: True	Diff: -0.4
+Epoch: 4	s: {'x4': 1.1, 'x2': 0.5, 'x1': 0.5, 'x3': 0.8}    	t: 1.62	Accepted: True	Diff: -0.5
+Epoch: 5	s: {'x4': 1.1, 'x2': 0.5, 'x1': 0.5, 'x3': 0.9}    	t: 1.62	Accepted: True	Diff: 0.4
+Epoch: 6	s: {'x4': 1.1, 'x2': 0.5, 'x1': 0.6, 'x3': 0.9}    	t: 1.62	Accepted: True	Diff: 0.3
+Epoch: 7	s: {'x4': 1.1, 'x2': 0.4, 'x1': 0.6, 'x3': 0.9}    	t: 1.62	Accepted: True	Diff: -0.5
+Epoch: 8	s: {'x4': 1.1, 'x2': 0.5, 'x1': 0.6, 'x3': 0.9}    	t: 1.62	Accepted: True	Diff: 0.5
+Epoch: 9	s: {'x4': 1.1, 'x2': 0.5, 'x1': 0.5, 'x3': 0.9}    	t: 1.62	Accepted: True	Diff: -0.3
+Epoch: 10	s: {'x4': 1.1, 'x2': 0.5, 'x1': 0.5, 'x3': 1.0}    	t: 1.62	Accepted: True	Diff: 0.4
+----------------------------------------------------------------------------------
+s_3: {'x4': 1.1, 'x2': 0.5, 'x3': 1.0, 'x1': 0.5}
+Epoch: 1	s: {'x4': 1.2, 'x2': 0.5, 'x1': 0.5, 'x3': 1.0}    	t: 1.458	Accepted: True	Diff: 0.1
+Epoch: 2	s: {'x4': 1.2, 'x2': 0.6, 'x1': 0.5, 'x3': 1.0}    	t: 1.458	Accepted: True	Diff: 0.5
+Epoch: 3	s: {'x4': 1.1, 'x2': 0.6, 'x1': 0.5, 'x3': 1.0}    	t: 1.458	Accepted: True	Diff: -0.1
+Epoch: 4	s: {'x4': 1.1, 'x2': 0.6, 'x1': 0.5, 'x3': 0.9}    	t: 1.458	Accepted: False	Diff: -0.4
+Epoch: 5	s: {'x4': 1.1, 'x2': 0.6, 'x1': 0.5, 'x3': 1.1}    	t: 1.458	Accepted: True	Diff: 0.4
+Epoch: 6	s: {'x4': 1.1, 'x2': 0.6, 'x1': 0.4, 'x3': 1.1}    	t: 1.458	Accepted: True	Diff: -0.3
+Epoch: 7	s: {'x4': 1.1, 'x2': 0.6, 'x1': 0.4, 'x3': 1.2}    	t: 1.458	Accepted: True	Diff: 0.4
+Epoch: 8	s: {'x4': 1.2, 'x2': 0.6, 'x1': 0.4, 'x3': 1.2}    	t: 1.458	Accepted: True	Diff: 0.1
+Epoch: 9	s: {'x4': 1.2, 'x2': 0.5, 'x1': 0.4, 'x3': 1.2}    	t: 1.458	Accepted: True	Diff: -0.5
+Epoch: 10	s: {'x4': 1.3, 'x2': 0.5, 'x1': 0.4, 'x3': 1.2}    	t: 1.458	Accepted: True	Diff: 0.1
+----------------------------------------------------------------------------------
+s_4: {'x4': 1.3, 'x2': 0.5, 'x3': 1.2, 'x1': 0.4}
+Epoch: 1	s: {'x4': 1.3, 'x2': 0.5, 'x1': 0.4, 'x3': 1.3}    	t: 1.312	Accepted: True	Diff: 0.4
+Epoch: 2	s: {'x4': 1.3, 'x2': 0.5, 'x1': 0.3, 'x3': 1.3}    	t: 1.312	Accepted: True	Diff: -0.3
+Epoch: 3	s: {'x4': 1.3, 'x2': 0.4, 'x1': 0.3, 'x3': 1.3}    	t: 1.312	Accepted: True	Diff: -0.5
+Epoch: 4	s: {'x4': 1.3, 'x2': 0.4, 'x1': 0.3, 'x3': 1.4}    	t: 1.312	Accepted: True	Diff: 0.4
+Epoch: 5	s: {'x4': 1.3, 'x2': 0.3, 'x1': 0.3, 'x3': 1.4}    	t: 1.312	Accepted: False	Diff: -0.5
+Epoch: 6	s: {'x4': 1.3, 'x2': 0.4, 'x1': 0.2, 'x3': 1.4}    	t: 1.312	Accepted: True	Diff: -0.3
+Epoch: 7	s: {'x4': 1.2, 'x2': 0.4, 'x1': 0.2, 'x3': 1.4}    	t: 1.312	Accepted: True	Diff: -0.1
+Epoch: 8	s: {'x4': 1.2, 'x2': 0.5, 'x1': 0.2, 'x3': 1.4}    	t: 1.312	Accepted: True	Diff: 0.5
+Epoch: 9	s: {'x4': 1.2, 'x2': 0.5, 'x1': 0.1, 'x3': 1.4}    	t: 1.312	Accepted: True	Diff: -0.3
+Epoch: 10	s: {'x4': 1.2, 'x2': 0.5, 'x1': 0.1, 'x3': 1.5}    	t: 1.312	Accepted: True	Diff: 0.4
+----------------------------------------------------------------------------------
+s_5: {'x4': 1.2, 'x2': 0.5, 'x3': 1.5, 'x1': 0.1}
+Epoch: 1	s: {'x4': 1.2, 'x2': 0.6, 'x1': 0.1, 'x3': 1.5}    	t: 1.181	Accepted: True	Diff: 0.5
+Epoch: 2	s: {'x4': 1.2, 'x2': 0.6, 'x1': 0.1, 'x3': 1.6}    	t: 1.181	Accepted: True	Diff: 0.4
+Epoch: 3	s: {'x4': 1.2, 'x2': 0.6, 'x1': 0.2, 'x3': 1.6}    	t: 1.181	Accepted: True	Diff: 0.3
+Epoch: 4	s: {'x4': 1.2, 'x2': 0.6, 'x1': 0.2, 'x3': 1.7}    	t: 1.181	Accepted: True	Diff: 0.4
+Epoch: 5	s: {'x4': 1.2, 'x2': 0.6, 'x1': 0.2, 'x3': 1.6}    	t: 1.181	Accepted: True	Diff: -0.4
+Epoch: 6	s: {'x4': 1.2, 'x2': 0.7, 'x1': 0.2, 'x3': 1.6}    	t: 1.181	Accepted: True	Diff: 0.5
+Epoch: 7	s: {'x4': 1.2, 'x2': 0.7, 'x1': 0.1, 'x3': 1.6}    	t: 1.181	Accepted: True	Diff: -0.3
+Epoch: 8	s: {'x4': 1.2, 'x2': 0.7, 'x1': 0.1, 'x3': 1.5}    	t: 1.181	Accepted: False	Diff: -0.4
+Epoch: 9	s: {'x4': 1.2, 'x2': 0.7, 'x1': 0.1, 'x3': 1.7}    	t: 1.181	Accepted: True	Diff: 0.4
+Epoch: 10	s: {'x4': 1.1, 'x2': 0.7, 'x1': 0.1, 'x3': 1.7}    	t: 1.181	Accepted: True	Diff: -0.1
+----------------------------------------------------------------------------------
+s_6: {'x4': 1.1, 'x2': 0.7, 'x3': 1.7, 'x1': 0.1}
+Epoch: 1	s: {'x4': 1.1, 'x2': 0.8, 'x1': 0.1, 'x3': 1.7}    	t: 1.063	Accepted: True	Diff: 0.5
+Epoch: 2	s: {'x4': 1.1, 'x2': 0.7, 'x1': 0.1, 'x3': 1.7}    	t: 1.063	Accepted: True	Diff: -0.5
+Epoch: 3	s: {'x4': 1.1, 'x2': 0.6, 'x1': 0.1, 'x3': 1.7}    	t: 1.063	Accepted: False	Diff: -0.5
+Epoch: 4	s: {'x4': 1.2, 'x2': 0.7, 'x1': 0.1, 'x3': 1.7}    	t: 1.063	Accepted: True	Diff: 0.1
+Epoch: 5	s: {'x4': 1.1, 'x2': 0.7, 'x1': 0.1, 'x3': 1.7}    	t: 1.063	Accepted: True	Diff: -0.1
+Epoch: 6	s: {'x4': 1.2, 'x2': 0.7, 'x1': 0.1, 'x3': 1.7}    	t: 1.063	Accepted: True	Diff: 0.1
+Epoch: 7	s: {'x4': 1.2, 'x2': 0.8, 'x1': 0.1, 'x3': 1.7}    	t: 1.063	Accepted: True	Diff: 0.5
+Epoch: 8	s: {'x4': 1.2, 'x2': 0.8, 'x1': 0.1, 'x3': 1.8}    	t: 1.063	Accepted: True	Diff: 0.4
+Epoch: 9	s: {'x4': 1.2, 'x2': 0.7, 'x1': 0.1, 'x3': 1.8}    	t: 1.063	Accepted: False	Diff: -0.5
+Epoch: 10	s: {'x4': 1.2, 'x2': 0.8, 'x1': 0.1, 'x3': 1.9}    	t: 1.063	Accepted: True	Diff: 0.4
+(red constraint fails)
+
+Stats:
+x1 not -ve constraint: 0 <= 0.10000000000000003
+x2 not -ve constraint: 0 <= 0.7
+x3 not -ve constraint: 0 <= 1.7000000000000004
+x4 not -ve constraint: 0 <= 1.0999999999999999
+green constraint: 4.3 <= 10
+red constraint: 5.4 <= 6
+blue constraint: 1.0 <= 10
+yellow constraint: 2.9 <= 18
+brown constraint: 5.0 <= 8
+purple constraint: 8.4 <= 12
+
+Profit: 11.700000000000001
+Solution: [0.1, 0.7, 1.7, 1.1]
+```
+
+### Conclusion
+
+Although I managed to tune the parameters to fail and stop on a wool constraint instead of a non negative constraint; the simulated annealing algorithm seems to still be very inconsistent in finding good profit values.
+
+Pros:
+
+- Fairly quick.
+- Can be tuned to increase intensification.
+
+Cons:
+
+- Generally very inaccurate.
+- With small differences acts very randomly.
+
+<hr />
+
+## Solving problem 2 with Taboo Search
+
+_Source code: [notebook](./problem2/tabooSearch/simulatedAnnealing.ipynb) or [python script](./problem2/tabooSearch/simulatedAnnealing.py)_
+
+Taboo search is deterministic so doesn't need to be run more than once for the same parameters, because its going to yield the same results.
+
+### Abstract
+
+The best solution I've found from running TS has been:
+A = 0.0, B = 4.5, C = 0.75, D = 0.0 making a profit of 25.5; when I was testing starting position and looked into the highest profit value.
+
+### Taboo search with default starting parameters
+
+With the [default](./problem2/tabooSearch/tabooSearch.py#L87) starting parameters, you get something like this:
+
+```
+(x3 not -ve constraint fails)
+(x1 not -ve constraint fails)
+(x4 not -ve constraint fails)
+(x2 not -ve constraint fails)
+Iteration: 1,	Current solution: {'x3': 0, 'x1': 0, 'x4': 0, 'x2': 0.1},	Taboo list: [{'x3': 0, 'x1': 0, 'x4': 0, 'x2': 0}, {'x3': 0, 'x1': 0, 'x4': 0, 'x2': 0.1}]
+(x3 not -ve constraint fails)
+(x1 not -ve constraint fails)
+(x4 not -ve constraint fails)
+Iteration: 2,	Current solution: {'x3': 0, 'x1': 0, 'x4': 0, 'x2': 0.2},	Taboo list: [{'x3': 0, 'x1': 0, 'x4': 0, 'x2': 0}, {'x3': 0, 'x1': 0, 'x4': 0, 'x2': 0.1}, {'x3': 0, 'x1': 0, 'x4': 0, 'x2': 0.2}]
+(x3 not -ve constraint fails)
+(x1 not -ve constraint fails)
+(x4 not -ve constraint fails)
+Iteration: 3,	Current solution: {'x3': 0, 'x1': 0, 'x4': 0, 'x2': 0.30000000000000004},	Taboo list: [{'x3': 0, 'x1': 0, 'x4': 0, 'x2': 0}, {'x3': 0, 'x1': 0, 'x4': 0, 'x2': 0.1}, {'x3': 0, 'x1': 0, 'x4': 0, 'x2': 0.2}, {'x3': 0, 'x1': 0, 'x4': 0, 'x2': 0.30000000000000004}]
+(x3 not -ve constraint fails)
+(x1 not -ve constraint fails)
+(x4 not -ve constraint fails)
+Iteration: 4,	Current solution: {'x3': 0, 'x1': 0, 'x4': 0, 'x2': 0.4},	Taboo list: [{'x3': 0, 'x1': 0, 'x4': 0, 'x2': 0}, {'x3': 0, 'x1': 0, 'x4': 0, 'x2': 0.1}, {'x3': 0, 'x1': 0, 'x4': 0, 'x2': 0.2}, {'x3': 0, 'x1': 0, 'x4': 0, 'x2': 0.30000000000000004}, {'x3': 0, 'x1': 0, 'x4': 0, 'x2': 0.4}]
+
+(after 52 more iterations...)
+
+Iteration: 56,	Current solution: {'x3': 0.7, 'x1': 0, 'x4': 0.1, 'x2': 4.5},	Taboo list: [{'x3': 0.30000000000000004, 'x1': 0, 'x4': 0, 'x2': 4.5}, {'x3': 0.4, 'x1': 0, 'x4': 0, 'x2': 4.5}, {'x3': 0.5, 'x1': 0, 'x4': 0, 'x2': 4.5}, {'x3': 0.6, 'x1': 0, 'x4': 0, 'x2': 4.5}, {'x3': 0.7, 'x1': 0, 'x4': 0, 'x2': 4.5}, {'x3': 0.7, 'x1': 0, 'x4': 0.1, 'x2': 4.5}, {'x3': 0.6, 'x1': 0, 'x4': 0.1, 'x2': 4.5}, {'x3': 0.7, 'x1': 0, 'x4': 0.1, 'x2': 4.4}]
+
+Stats:
+x1 not -ve constraint: 0 <= 0
+x2 not -ve constraint: 0 <= 4.5
+x3 not -ve constraint: 0 <= 0.7
+x4 not -ve constraint: 0 <= 0.1
+green constraint: 9.8 <= 10
+red constraint: 6.0 <= 6
+blue constraint: 4.5 <= 10
+yellow constraint: 18.0 <= 18
+brown constraint: 1.0 <= 8
+purple constraint: 2.4 <= 12
+Profit:  25.400000000000002
+```
+
+Taboo search in this problem is very effective off the bat, it goes for the best neighbour each iteration and as there aren't any local minima in this problem, because there is just the feasible region and the linear profit function; the taboo search is very effective at this problem and efficient as well.
+
+### Changing the starting point
+
+For this independant variable I tested a range of starting points in a spiral shape from (0, 0, 0, 0) outwards over 1000 points.
+
+When it gave answers which were infeasible, because the algorithm started outside the feasible region, the profit was set to 0.
+
+![TS](./problem2/tabooSearch/profit_against_starting_point.png?raw=true "Profit against starting point.")
+
+From (0, 0, 0, 0) and an area around this point, TS does worse maybe because the TS algorithm gets stuck at another cross over point between constraints.
+
+### Changing the step size
+
+For this I tested a range of 20 step sizes from 0.05 to 1.0.
+
+![TS](./problem2/tabooSearch/profit_against_step_size.png?raw=true "Profit against starting point.")
+
+The best step_sizes are those which divide into the best solution. These are: 0.05, 0.15, 0.25 & 0.75.
+
+### Improved found solution
+
+These are the constraint values for the best solution found.
+
+```
+x1 not -ve constraint: 0 <= 0
+x2 not -ve constraint: 0 <= 4.499999999999992
+x3 not -ve constraint: 0 <= 0.7500000000000001
+x4 not -ve constraint: 0 <= 0
+green constraint: 9.75 <= 10
+red constraint: 6.0 <= 6
+blue constraint: 4.5 <= 10
+yellow constraint: 18.0 <= 18
+brown constraint: 0.75 <= 8
+purple constraint: 2.25 <= 12
+Profit:  25.49999999999996
+```
+
+### Conclusion
+
+Taboo search is the best algorithm so far for maximising profit.
+
+By having a neighbourhood of potential values, which are ranked by the profit function and being able to remove infeasible neighbours at the iteration level until you run out of feasible neighbours, it does exactly what is needed following the surface of the feasible region until its found the best solution.
+
+Pros:
+
+- Very efficient, taking very little time to zone in on solutions.
+- Very accurate.
+
+Cons:
+
+- From bad starting positions can get stuck at sub-optimal solutions, although these are relatively much better than the other metaheuristics.
+
+<hr />
+
+## Solving problem 2 with Genetic Algorithm
+
+_Source code: [notebook](./problem2/geneticAlgorithm/geneticAlgorithm.ipynb) or [python script](./problem2/geneticAlgorithm/geneticAlgorithm.py)_
+
+Being stochastic, GA will create different results each time but they will be very similar with the same settings.
+
+### Abstract
+
+GA consistantly gets close to the best profit answer that I have found so far which is 25.5.
+
+In this GA I decided to design the algorithm to use a quinary dna structure to encode the 4 dimensional coordinates to 3 decimal place precision. I used a 32 length quinary array to hold the a search space between 0.000 and 15.624 (per dimension).
+
+```py
+# Coordinate data
+{'x1': 0.0, 'x2': 1.234, 'x3': 5.678, 'x4': 6.0}
+
+# Encoded coordinate data
+['0', '0', '0', '0', '0', '0', '0', '1', '4', '4', '1', '4', '1', '4', '0', '2', '0', '3', '1', '4', '3', '0', '0', '0']
+```
+
+### Genetic algorithm with default starting parameters
+
+With the [default](./problem2/geneticAlgorithm/simulatedAnnealing.py#L102) starting parameters, you get something like this:
+
+```
+Feasible:  10346
+Infeasible:  4509
+```
+
+![GA](./problem2/geneticAlgorithm/profits_against_generation.png?raw=true "Profit against starting point.")
+
+Although this graph looks largely like the bulk of the data is infeasible, this is actually not the case and there is a high density of data in a small space of the feasible region.
+
+You can see that on this run of the algorithm, over the first 5 generations, the population largely converges onto the 5 and 25 profit part of the search space. This again converges further after 14 generations between 20 and 30.
+
+The spread of values is largely due to the mutation function which is one of the stochastic features of this metaheuristic. However, most of the population is intersified around the optimal profit value due to the cross-over and selection functions.
+
+### Changing population size
+
+For this variable I tested values from 100 to 2000, for each of these I repeated the test for 5 times (as the algorithm is stochastic) to get a general idea of consistency.
+
+When it gave answers which were infeasible, because the algorithm started outside the feasible region, the profit was set to 0.
+
+![GA](./problem2/geneticAlgorithm/profit_against_pop_size.png?raw=true "Profit against starting point.")
+
+With a population size of around 1000, profit is more focused around the optimal area. So I fixed the population at 1000 for the subsequent tests, although I did notice a large lag in subsequent testing
+
+### Changing fitness upper bound
+
+For this I tested 20 values from 0.05 to 1.0, repeating testing at each value 5 times.
+
+![GA](./problem2/geneticAlgorithm/profits_against_fub.png?raw=true "Profit against fitness upper bound.")
+
+I fixed the fitness upper bound to 50% after this for subsquent tests as there didn't seem to be much of an effect.
+
+### Changing amount of generations
+
+I tested 35 amounts of epochs/generations from 5 to 40 epochs, each one repeated 5 times.
+
+![GA](./problem2/geneticAlgorithm/profits_against_epochs.png?raw=true "Profit against epoch amount.")
+
+I kept epochs at 30 because of the consistency of the results which tend to occur about this amount. However, the execution time is quite slow.
+
+### Changing cross over amount
+
+I tested 15 cross over amounts from 5 to 20, each was repeated 4 times
+
+![GA](./problem2/geneticAlgorithm/profits_against_cross_over_amount.png?raw=true "Profit against cross over amount.")
+
+`Execution time: 183.16s` (each GA took ~3 seconds)
+
+Cross over amount was fixed at 6 after this because it seemed to be more consistent at the lower amounts.
+
+### Changing mutation chance
+
+I tested 20 different mutation chances ranging from 0.02 to 0.4 in increments of 0.02; each repeated 5 times.
+
+![GA](./problem2/geneticAlgorithm/profits_against_mutation_chance.png?raw=true "Profit against mutation chance.")
+
+`Execution time: 215.933s` (each GA took ~2 seconds)
+
+Mutation chance was reduced to 3% to make results more consistent over generations, with a larger population.
+
+### Changing selection method
+
+Like in problem 1 in again used truncation selection (by default), fitness proportionate selection and tournament selection.
+
+```
+Execution time (Truncation selection GA):  2.118
+Feasible:  33393
+Infeasible:  11491
+```
+
+![GA](./problem2/geneticAlgorithm/profits_against_generation_trunc.png?raw=true "Profit against selection method (trunc).")
+
+```
+Execution time (FPS selection GA):  112.859
+Feasible:  35169
+Infeasible:  9715
+```
+
+![GA](./problem2/geneticAlgorithm/profits_against_generation_fps.png?raw=true "Profit against selection method (fps).")
+
+```
+Execution time (Tournament selection GA):  2.058
+Feasible:  40530
+Infeasible:  4354
+```
+
+![GA](./problem2/geneticAlgorithm/profits_against_generation_tourn.png?raw=true "Profit against selection method (tourn).")
+
+These show that tournament selection is again far more superior than both truncation and fitness proportionate selection. Furthermore, is is about as quick as truncation selection which is the most basic.
+
+### Conclusions
+
+For the batch tests I would have liked to have had 10 repeats instead of 5, but this would have doubled the already very slow times that it took to do the processing; some of which just gave up and didn't return results.
+
+Although GAs are good at finding very good solutions on average, the amount of time and calculations taken to get there for this problem is excessive compared to the other metaheuristics.
+
+Pros:
+
+- Frequently finds very good solutions.
+
+Cons:
+
+- Can be unreliable (because of the stochastic nature of GA's)
+- Takes a huge amount of time / processing power compared with other metaheuristics at this particular problem. (because of the population and amount of epochs used)
 
 <hr />
 

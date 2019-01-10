@@ -58,7 +58,7 @@ These can be modelled into the following Linear Programming model:
 
 ![Linear Programming Model](./problem2/model.png?raw=true "Linear programming model")
 
-The best solution I've found is .
+The best solution I've found is A = 0.0, B = 4.5, C = 0.75 & D = 0.0 for a profit of 25.5.
 
 ### Solving the problem
 

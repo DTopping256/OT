@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
+# In[2]:
 
 
 import random
@@ -12,13 +12,13 @@ import sys
 sys.path.extend(["../../modules", "../"])
 
 
-# In[2]:
+# In[3]:
 
 
 from problem import f, pds, constraints, check_all_constraints, print_all_constraints
 
 
-# In[3]:
+# In[4]:
 
 
 ###### Gradient Descent stuff
@@ -100,7 +100,7 @@ def gradient_descent(pds, constraints, DEFAULTS, is_maximisation = None, x_0s = 
     return (step_array, current_xs)
 
 
-# In[4]:
+# In[5]:
 
 
 x_0s = {"x1": 0, "x2": 0, "x3": 0, "x4": 0}
@@ -112,21 +112,20 @@ e_x = 0.001
 DEFAULTS = GD_defaults(True, x_0s, max_i, step_m, e_g, e_x)
 
 
-# In[5]:
+# In[6]:
 
 
 results = gradient_descent(pds, constraints, DEFAULTS, print_workings=True)
 
 
-# In[6]:
-
-
-for i in range(len(results[0])):
-    print("Iter: ", i)
-    print_all_constraints(results[0][i], constraints)
-
-
 # In[7]:
+
+
+print_all_constraints(results[1], constraints)
+print("Profit: ", f(results[1]))
+
+
+# In[9]:
 
 
 # Imports my plotting module
@@ -177,4 +176,27 @@ best = gradient_descent(pds, constraints, DEFAULTS, x_0s = spiral[0], print_work
 
 print_all_constraints(best[1], constraints)
 print("Profit: ", f(best[1]))
+
+
+# In[7]:
+
+
+# Batch testing step_m
+step_m_results = []
+for i in range(100):
+    step_m = (1+i)/100
+    result = gradient_descent(pds, constraints, DEFAULTS, step_m=step_m)
+    step_m_results.append({"x": step_m, "y": f(result[1]) if result[1] is not False else False})
+
+
+# In[10]:
+
+
+batch_plt.plot_2d_batch_accuracy("profit f(cx)", "step multiplier (step_m)", False, step_m_results)
+
+
+# In[ ]:
+
+
+
 

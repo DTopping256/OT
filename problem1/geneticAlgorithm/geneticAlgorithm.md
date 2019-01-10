@@ -2,7 +2,7 @@
 
 _Source code: [notebook](./geneticAlgorithm.ipynb) or [python script](./geneticAlgorithm.py)_
 
-Being stochastic, GA's will create different graphs each time but they will be very similar with the same settings.
+Being stochastic, GA's will create different results each time but they will be very similar with the same settings.
 
 ## Abstract
 
